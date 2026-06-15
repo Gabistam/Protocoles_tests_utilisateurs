@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de cours — Protocole et Tests Utilisateurs (M1 UX/UI)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#3b82f6;
+  --secondary:#22c55e;
+  --accent:#f59e0b;
+  --danger:#ef4444;
+  --purple:#8b5cf6;
+  --bg:#0f172a;
+  --bg-soft:#1e293b;
+  --border:rgba(148,163,184,0.15);
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Sora',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+}
+code, .mono{font-family:'JetBrains Mono',monospace;}
+
+header.hero{
+  background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1e3a5f 100%);
+  padding:2.5rem 1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.badge{
+  display:inline-block;
+  background:rgba(59,130,246,0.15);
+  border:1px solid rgba(59,130,246,0.4);
+  color:#93c5fd;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.75rem;
+  padding:0.3rem 0.8rem;
+  border-radius:999px;
+  margin-bottom:1rem;
+  letter-spacing:0.05em;
+}
+h1{font-size:2rem;font-weight:800;margin:0 0 0.5rem;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.subtitle{color:var(--muted);margin:0 0 1.5rem;font-size:1rem;}
+.meta-pills{display:flex;flex-wrap:wrap;gap:0.6rem;}
+.pill{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:0.4rem 1rem;
+  font-size:0.85rem;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text);
+}
+.pill .label{color:var(--muted);margin-right:0.3rem;}
+
+main{max-width:1100px;margin:0 auto;padding:1.5rem;}
+
+.tabs{
+  display:flex;
+  gap:0.4rem;
+  overflow-x:auto;
+  padding-bottom:0.5rem;
+  margin-bottom:1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.tab{
+  flex:0 0 auto;
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  font-family:'Sora',sans-serif;
+  font-weight:600;
+  font-size:0.85rem;
+  padding:0.6rem 1.1rem;
+  border-radius:8px 8px 0 0;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.tab:hover{color:var(--text);background:rgba(148,163,184,0.08);}
+.tab.active{color:#fff;background:linear-gradient(135deg,var(--primary),var(--purple));}
+
+.panel{display:none;animation:fade .3s ease;}
+.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.card{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.5rem;
+  margin-bottom:1.2rem;
+}
+.section-title{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:1.15rem;font-weight:700;margin:0 0 1rem;
+  color:#fff;
+}
+.icon-bg{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.icon-blue{background:rgba(59,130,246,0.15);}
+.icon-green{background:rgba(34,197,94,0.15);}
+.icon-amber{background:rgba(245,158,11,0.15);}
+.icon-purple{background:rgba(139,92,246,0.15);}
+
+ul{margin:0;padding-left:1.3rem;}
+ul li{margin-bottom:0.4rem;}
+
+.famille-tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.8rem;}
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;font-weight:700;
+  padding:0.2rem 0.6rem;border-radius:6px;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+.f1{background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);}
+.f2{background:rgba(34,197,94,0.15);color:#86efac;border:1px solid rgba(34,197,94,0.3);}
+.f3{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
+.f4{background:rgba(139,92,246,0.15);color:#c4b5fd;border:1px solid rgba(139,92,246,0.3);}
+.f5{background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
+
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+th,td{padding:0.6rem 0.7rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
+th{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;}
+td.timing{font-family:'JetBrains Mono',monospace;color:#93c5fd;white-space:nowrap;}
+
+.objectif-box{
+  background:rgba(59,130,246,0.08);
+  border-left:4px solid var(--primary);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-bottom:1rem;font-size:0.9rem;
+}
+.livrable-box{
+  background:rgba(34,197,94,0.08);
+  border-left:4px solid var(--secondary);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-top:1rem;font-size:0.9rem;
+}
+
+.progress-track{
+  height:8px;background:var(--bg);border-radius:999px;overflow:hidden;
+  border:1px solid var(--border);margin-bottom:1.5rem;
+}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media (max-width:700px){.grid2{grid-template-columns:1fr;}}
+
+.result-panel{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:12px;padding:1.2rem;margin-top:1rem;
+}
+.result-panel .score{color:var(--secondary);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem;}
+
+footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;border-top:1px solid var(--border);margin-top:2rem;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">M1 UX/UI · MODULE</span>
+    <h1>Protocole et Tests Utilisateurs</h1>
+    <p class="subtitle">Plan de cours détaillé — niveau débutant — approche 100% pratique</p>
+    <div class="meta-pills">
+      <span class="pill"><span class="label">Durée</span>24h30 (7 × 3h30)</span>
+      <span class="pill"><span class="label">Séances</span>7</span>
+      <span class="pill"><span class="label">Niveau</span>Débutant</span>
+      <span class="pill"><span class="label">Pratique</span>≈ 65%</span>
+      <span class="pill"><span class="label">Évaluation</span>CC1 + CC2</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="vue">Vue d'ensemble</button>
+    <button class="tab" data-tab="s1">Séance 1</button>
+    <button class="tab" data-tab="s2">Séance 2</button>
+    <button class="tab" data-tab="s3">Séance 3</button>
+    <button class="tab" data-tab="s4">Séance 4</button>
+    <button class="tab" data-tab="s5">Séance 5</button>
+    <button class="tab" data-tab="s6">Séance 6</button>
+    <button class="tab" data-tab="s7">Séance 7</button>
+    <button class="tab" data-tab="outils">Outils</button>
+    <button class="tab" data-tab="eval">Évaluation</button>
+  </div>
+
+  <!-- VUE D'ENSEMBLE -->
+  <div class="panel active" id="vue">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">🎯</span>Objectifs généraux du module</div>
+      <div class="objectif-box">
+        À l'issue du module, les étudiants seront capables de concevoir, conduire et exploiter un protocole de test utilisateur complet, de la définition des hypothèses jusqu'à la restitution de recommandations argumentées.
+      </div>
+      <ul>
+        <li>Construire un protocole de test rigoureux (objectifs, hypothèses, scénarios de tâches)</li>
+        <li>Distinguer et choisir le type de test adapté à un contexte donné</li>
+        <li>Recruter un échantillon de participants pertinent</li>
+        <li>Conduire une session de test en respectant les bonnes pratiques (think-aloud, neutralité)</li>
+        <li>Analyser des résultats avec des métriques UX (SUS, taux de réussite, temps sur tâche)</li>
+        <li>Rédiger et présenter un rapport de recommandations</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-purple">🗺️</span>Séquençage global</div>
+      <table>
+        <tr><th>Séance</th><th>Thème</th><th>Théorie</th><th>Pratique</th><th>Type d'activité</th></tr>
+        <tr><td>1</td><td>Fondamentaux et types de tests</td><td>~30%</td><td>~70%</td><td><span class="tag f1">Analyse critique</span></td></tr>
+        <tr><td>2</td><td>Construire un protocole de test</td><td>~30%</td><td>~70%</td><td><span class="tag f2">Atelier groupe</span></td></tr>
+        <tr><td>3</td><td>Recrutement et échantillonnage</td><td>~35%</td><td>~65%</td><td><span class="tag f2">Atelier + simulation</span></td></tr>
+        <tr><td>4</td><td>Conduite de session : posture et biais</td><td>~20%</td><td>~80%</td><td><span class="tag f3">Jeu de rôle</span></td></tr>
+        <tr><td>5</td><td>Tests à distance et outils (Maze/Lookback + GA4/Hotjar)</td><td>~25%</td><td>~75%</td><td><span class="tag f3">Atelier outils</span></td></tr>
+        <tr><td>6</td><td>Analyse des résultats et rapport de recommandations</td><td>~25%</td><td>~75%</td><td><span class="tag f4">Analyse + atelier rédaction</span></td></tr>
+        <tr><td>7</td><td>Restitution finale (CC2)</td><td>0%</td><td>100%</td><td><span class="tag f5">CC2 — Oral</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">🧵</span>Fil rouge pédagogique</div>
+      <p style="font-size:0.9rem;color:var(--muted);margin:0;">
+        Toutes les séances s'appuient sur un même produit fictif (application mobile à définir lors de la séance 1) :
+        les étudiants construisent progressivement le protocole, le testent, l'analysent et le restituent sur ce même cas tout au long du module — assurant une cohérence de bout en bout entre CC1 et CC2.
+      </p>
+    </div>
+  </div>
+
+  <!-- SEANCE 1 -->
+  <div class="panel" id="s1">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">01</span>Pourquoi tester ? Fondamentaux et types de tests</div>
+      <div class="famille-tags"><span class="tag f1">Théorie 30%</span><span class="tag f2">Pratique 70%</span></div>
+      <div class="objectif-box">
+        Comprendre l'utilité du test utilisateur dans un projet UX et distinguer les grandes familles de méthodes de test.
+      </div>
+      <table>
+        <tr><th>Horaire</th><th>Activité</th><th>Contenu</th><th>Modalité</th></tr>
+        <tr><td class="timing">9h00–9h45</td><td>Cours : pourquoi tester ?</td><td>Enjeux du test utilisateur, coût de l'erreur non détectée, place dans le cycle de conception</td><td>Cours interactif</td></tr>
+        <tr><td class="timing">9h45–10h30</td><td>Cours : panorama des méthodes</td><td>Modéré vs non-modéré, qualitatif vs quantitatif, distance vs présentiel</td><td>Cours + exemples</td></tr>
+        <tr><td class="timing">10h30–10h45</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">10h45–12h00</td><td>Atelier : autopsie de rapports de test</td><td>Par groupes, analyse de 2-3 rapports de tests réels fournis : identifier la méthode utilisée, ses forces et limites</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">12h00–13h30</td><td>Déjeuner</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">13h30–14h15</td><td>Mise en commun</td><td>Restitution des groupes, synthèse collective des critères de choix d'une méthode</td><td>Débrief collectif</td></tr>
+        <tr><td class="timing">14h15–15h15</td><td>Présentation du cas fil rouge</td><td>Découverte du produit fictif support du module, définition collective du périmètre de test</td><td>Présentation + discussion</td></tr>
+        <tr><td class="timing">15h15–15h30</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">15h30–17h00</td><td>Atelier : matrice de choix de méthode</td><td>Pour 3 scénarios différents (budget, délai, cible), choisir et justifier la méthode de test adaptée</td><td>Atelier individuel/binôme</td></tr>
+      </table>
+      <div class="livrable-box"><strong>Livrable :</strong> Matrice de choix de méthode complétée et justifiée (individuel)</div>
+    </div>
+  </div>
+
+  <!-- SEANCE 2 -->
+  <div class="panel" id="s2">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">02</span>Construire un protocole de test</div>
+      <div class="famille-tags"><span class="tag f1">Théorie 30%</span><span class="tag f2">Pratique 70%</span></div>
+      <div class="objectif-box">
+        Rédiger un script de test complet : objectifs, hypothèses, scénarios de tâches, questions post-test.
+      </div>
+      <table>
+        <tr><th>Horaire</th><th>Activité</th><th>Contenu</th><th>Modalité</th></tr>
+        <tr><td class="timing">9h00–9h30</td><td>Retour sur séance 1</td><td>Rappel des méthodes, partage de 2-3 matrices exemplaires</td><td>Discussion</td></tr>
+        <tr><td class="timing">9h30–10h30</td><td>Cours : structure d'un protocole</td><td>Objectifs vs hypothèses, scénarios de tâches, formulation des questions post-test, ordre et durée</td><td>Cours + exemples</td></tr>
+        <tr><td class="timing">10h30–10h45</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">10h45–12h00</td><td>Atelier : objectifs et hypothèses</td><td>En groupes sur le fil rouge, formuler 3 hypothèses testables et les objectifs associés</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">12h00–13h30</td><td>Déjeuner</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">13h30–14h30</td><td>Cours : rédiger des scénarios de tâches</td><td>Critères d'une bonne tâche (réaliste, non biaisée, mesurable), erreurs fréquentes</td><td>Cours + exercices courts</td></tr>
+        <tr><td class="timing">14h30–14h45</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">14h45–17h00</td><td>Atelier : rédaction du script complet</td><td>Rédaction collaborative du script de test (intro, 3-4 tâches, questions post-test) sur le fil rouge</td><td>Atelier groupe</td></tr>
+      </table>
+      <div class="livrable-box"><strong>Livrable (support CC1) :</strong> Script de test complet (groupe)</div>
+    </div>
+  </div>
+
+  <!-- SEANCE 3 -->
+  <div class="panel" id="s3">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">03</span>Recrutement et échantillonnage</div>
+      <div class="famille-tags"><span class="tag f1">Théorie 35%</span><span class="tag f2">Pratique 65%</span></div>
+      <div class="objectif-box">
+        Définir des critères de recrutement pertinents et constituer un échantillon de participants adapté au protocole.
+      </div>
+      <table>
+        <tr><th>Horaire</th><th>Activité</th><th>Contenu</th><th>Modalité</th></tr>
+        <tr><td class="timing">9h00–9h30</td><td>Retour sur séance 2</td><td>Lecture croisée de 2 scripts produits, premiers retours</td><td>Discussion + peer feedback</td></tr>
+        <tr><td class="timing">9h30–10h30</td><td>Cours : critères de recrutement</td><td>Profils cibles, critères d'inclusion/exclusion, biais de sélection</td><td>Cours + exemples</td></tr>
+        <tr><td class="timing">10h30–10h45</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">10h45–11h30</td><td>Cours : taille d'échantillon</td><td>Règle des 5 de Nielsen, ses limites, cas où elle ne s'applique pas (quantitatif, A/B)</td><td>Cours + discussion</td></tr>
+        <tr><td class="timing">11h30–12h00</td><td>Atelier : grille de recrutement</td><td>Rédaction des critères de recrutement pour le fil rouge</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">12h00–13h30</td><td>Déjeuner</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">13h30–15h00</td><td>Simulation de tri de candidats</td><td>À partir de 15 profils fournis, sélectionner les 5 participants les plus pertinents et justifier les exclusions</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">15h00–15h15</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">15h15–17h00</td><td>Restitution + ajustement du protocole</td><td>Présentation des sélections, débat sur les choix, ajustement du script si besoin</td><td>Présentation collective</td></tr>
+      </table>
+      <div class="livrable-box"><strong>Livrable (support CC1) :</strong> Grille de recrutement + sélection justifiée de 5 profils (groupe)</div>
+    </div>
+  </div>
+
+  <!-- SEANCE 4 -->
+  <div class="panel" id="s4">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">04</span>Conduite de session : posture et biais</div>
+      <div class="famille-tags"><span class="tag f1">Théorie 20%</span><span class="tag f2">Pratique 80%</span></div>
+      <div class="objectif-box">
+        Conduire une session de test en respectant la neutralité du modérateur et en appliquant le protocole think-aloud.
+      </div>
+      <table>
+        <tr><th>Horaire</th><th>Activité</th><th>Contenu</th><th>Modalité</th></tr>
+        <tr><td class="timing">9h00–9h45</td><td>Cours court : posture du modérateur</td><td>Think-aloud protocol, biais de l'observateur, formulations neutres vs orientées, gestion des silences</td><td>Cours + démonstration</td></tr>
+        <tr><td class="timing">9h45–10h15</td><td>Démonstration filmée</td><td>Visionnage commenté de 2 extraits : un test bien mené, un test biaisé. Identification collective des erreurs</td><td>Démonstration + débat</td></tr>
+        <tr><td class="timing">10h15–10h30</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">10h30–12h00</td><td>Jeu de rôle — Round 1</td><td>Groupes de 3 (modérateur/participant/observateur) testent le script de séance 2. Premier passage</td><td>Jeu de rôle en rotation</td></tr>
+        <tr><td class="timing">12h00–13h30</td><td>Déjeuner</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">13h30–14h00</td><td>Débrief intermédiaire</td><td>Retours sur les erreurs de modération observées, ajustements collectifs</td><td>Débrief collectif</td></tr>
+        <tr><td class="timing">14h00–16h00</td><td>Jeu de rôle — Round 2 et 3</td><td>Rotation des rôles, chaque étudiant passe modérateur et observateur une fois</td><td>Jeu de rôle en rotation</td></tr>
+        <tr><td class="timing">16h00–16h15</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">16h15–17h00</td><td>Synthèse individuelle</td><td>Chaque étudiant note 2 biais observés (chez soi ou les autres) et comment les corriger</td><td>Travail individuel</td></tr>
+      </table>
+      <div class="livrable-box"><strong>Livrable :</strong> Fiche d'observation des biais (individuel)</div>
+    </div>
+  </div>
+
+  <!-- SEANCE 5 -->
+  <div class="panel" id="s5">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">05</span>Tests à distance et outils</div>
+      <div class="famille-tags"><span class="tag f1">Théorie 25%</span><span class="tag f2">Pratique 75%</span><span class="tag f4">Atelier GA4/Hotjar</span></div>
+      <div class="objectif-box">
+        Mettre en place un test non-modéré à distance avec un outil gratuit, collecter des premières données, puis prendre en main GA4 et Hotjar pour confronter données qualitatives et quantitatives.
+      </div>
+      <table>
+        <tr><th>Horaire</th><th>Activité</th><th>Contenu</th><th>Modalité</th></tr>
+        <tr><td class="timing">9h00–9h45</td><td>Cours : panorama d'outils</td><td>Maze, Lookback, UserTesting (présentation), alternatives gratuites ; positionnement de GA4 et Hotjar comme outils quantitatifs complémentaires (analytics, heatmaps, funnels)</td><td>Cours + démonstration</td></tr>
+        <tr><td class="timing">9h45–10h30</td><td>Démonstration outil</td><td>Prise en main guidée d'un outil gratuit de test non-modéré (Maze ou Lookback)</td><td>Démonstration live</td></tr>
+        <tr><td class="timing">10h30–10h45</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">10h45–12h00</td><td>Atelier : paramétrage du test</td><td>Par groupes, transposer le script de test en version non-modérée sur l'outil choisi</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">12h00–13h30</td><td>Déjeuner</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">13h30–15h00</td><td>Test croisé entre groupes</td><td>Chaque groupe fait passer son test à un autre groupe (rôle de participants), collecte des données en direct</td><td>Atelier croisé</td></tr>
+        <tr><td class="timing">15h00–15h15</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">15h15–17h00</td><td>Atelier dédié : prise en main GA4 et Hotjar</td><td>Sur un compte de démonstration (Google Analytics Demo Account) et un essai gratuit Hotjar : explorer rapports d'engagement, funnels de conversion et heatmaps/recordings ; mettre en regard ces données quantitatives avec les findings qualitatifs collectés en début d'après-midi</td><td>Atelier groupe</td></tr>
+      </table>
+      <div class="livrable-box"><strong>Livrable :</strong> Jeu de données brutes collectées (test qualitatif) + fiche de lecture GA4/Hotjar comparant un insight quantitatif à un finding qualitatif (groupe)</div>
+    </div>
+  </div>
+
+  <!-- SEANCE 6 -->
+  <div class="panel" id="s6">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">06</span>Analyse des résultats et rapport de recommandations</div>
+      <div class="famille-tags"><span class="tag f1">Théorie 25%</span><span class="tag f2">Pratique 75%</span></div>
+      <div class="objectif-box">
+        Calculer et interpréter les métriques UX clés, prioriser les findings, puis rédiger le rapport de recommandations et préparer le support de restitution (CC2).
+      </div>
+      <table>
+        <tr><th>Horaire</th><th>Activité</th><th>Contenu</th><th>Modalité</th></tr>
+        <tr><td class="timing">9h00–9h45</td><td>Cours : métriques UX</td><td>Taux de réussite, temps sur tâche, taux d'erreur, SUS (System Usability Score), interprétation des scores</td><td>Cours + exemples chiffrés</td></tr>
+        <tr><td class="timing">9h45–10h30</td><td>Atelier : calcul des métriques</td><td>Sur les données collectées en séance 5, calculer les métriques du groupe</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">10h30–10h45</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">10h45–11h30</td><td>Cours + atelier : findings et matrice sévérité/fréquence</td><td>Formulation des findings à partir des observations, méthode de priorisation, placement dans la matrice</td><td>Cours + atelier groupe</td></tr>
+        <tr><td class="timing">11h30–12h00</td><td>Sélection des findings prioritaires</td><td>Choix des 5 findings prioritaires à porter dans le rapport</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">12h00–13h30</td><td>Déjeuner</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">13h30–14h00</td><td>Cours court : structurer un rapport</td><td>Plan type d'un rapport de recommandations (synthèse, méthodologie, findings, recommandations priorisées)</td><td>Cours bref</td></tr>
+        <tr><td class="timing">14h00–16h00</td><td>Atelier : rédaction du rapport</td><td>Mise en forme du rapport final à partir des livrables des séances 2, 3 et 6</td><td>Atelier groupe</td></tr>
+        <tr><td class="timing">16h00–16h15</td><td>Pause</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">16h15–17h00</td><td>Préparation du support de restitution</td><td>Construction du support de présentation (5 slides max), répartition de la parole, première répétition</td><td>Atelier groupe</td></tr>
+      </table>
+      <div class="livrable-box"><strong>Livrables (support CC2) :</strong> Rapport de recommandations complet + support de présentation (groupe), prêts pour la restitution de séance 7</div>
+    </div>
+  </div>
+
+  <!-- SEANCE 7 -->
+  <div class="panel" id="s7">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-amber">07</span>Restitution finale — CC2</div>
+      <div class="famille-tags"><span class="tag f5">Théorie 0% — Pratique 100% — Évaluation</span></div>
+      <div class="objectif-box">
+        Présenter à l'oral le rapport de recommandations dans un format de restitution client et répondre aux questions du jury.
+      </div>
+      <table>
+        <tr><th>Horaire</th><th>Activité</th><th>Contenu</th><th>Modalité</th></tr>
+        <tr><td class="timing">9h00–9h30</td><td>Finalisation et répétition</td><td>Derniers ajustements du support, répétition finale en groupe</td><td>Travail de groupe</td></tr>
+        <tr><td class="timing">9h30–9h45</td><td>Tirage de l'ordre de passage</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">9h45–12h00</td><td>Restitutions orales (CC2) — partie 1</td><td>Chaque groupe présente 10 min + 5 min de questions (simulation client)</td><td>Oral évalué</td></tr>
+        <tr><td class="timing">12h00–13h30</td><td>Déjeuner</td><td>—</td><td>—</td></tr>
+        <tr><td class="timing">13h30–16h30</td><td>Restitutions orales (CC2) — partie 2</td><td>Suite des passages, notation sur la grille d'évaluation fournie</td><td>Oral évalué</td></tr>
+        <tr><td class="timing">16h30–17h00</td><td>Débrief collectif et clôture</td><td>Retours collectifs, bilan du module, ressources pour approfondir</td><td>Discussion + bilan</td></tr>
+      </table>
+      <div class="livrable-box"><strong>Livrable (CC2) :</strong> Restitution orale notée (groupe) — le rapport écrit ayant été finalisé en séance 6</div>
+    </div>
+  </div>
+
+  <!-- OUTILS -->
+  <div class="panel" id="outils">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-purple">🧰</span>Outils pris en main durant le module</div>
+      <div class="objectif-box">
+        Tous les outils sont en version gratuite et ne nécessitent pas de compte payant. La progression suit le déroulé du protocole : rédaction → recrutement → conduite → collecte à distance → analyse → restitution.
+      </div>
+      <table>
+        <tr><th>Séance</th><th>Outil</th><th>Usage</th></tr>
+        <tr><td>1</td><td>—</td><td>Aucun outil spécifique : analyse de rapports de test existants (PDF/web)</td></tr>
+        <tr><td>2</td><td>Google Docs / Notion</td><td>Rédaction collaborative du script de test (objectifs, hypothèses, tâches, questions)</td></tr>
+        <tr><td>3</td><td>Feuille de calcul (Google Sheets / Excel)</td><td>Grille de recrutement et tri des profils candidats</td></tr>
+        <tr><td>4</td><td>Smartphone / webcam + enregistreur audio</td><td>Enregistrement des sessions de test en présentiel (jeu de rôle), prise de notes d'observation</td></tr>
+        <tr><td>5</td><td>Maze ou Lookback (version découverte) + Google Forms + GA4 (compte démo) + Hotjar (essai gratuit)</td><td>Paramétrage et passation d'un test non-modéré à distance (Maze/Lookback) ; atelier dédié de prise en main de GA4 (rapports d'engagement, funnels) et Hotjar (heatmaps, recordings), mis en regard avec les findings qualitatifs</td></tr>
+        <tr><td>6</td><td>Feuille de calcul (SUS, métriques) + Miro ou Notion (matrice de priorisation) + Google Docs / Canva (rapport et slides)</td><td>Calcul des métriques, priorisation des findings, rédaction du rapport et du support de restitution</td></tr>
+        <tr><td>7</td><td>Support de présentation finalisé en séance 6</td><td>Restitution orale (aucun nouvel outil)</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">💡</span>Remarques pratiques</div>
+      <ul style="font-size:0.9rem;color:var(--muted);">
+        <li>Prévoir l'installation/création de comptes gratuits (Maze ou Lookback) avant la séance 5 pour ne pas perdre de temps en classe</li>
+        <li>Pour GA4, utiliser le compte de démonstration officiel de Google (données réelles d'un site e-commerce) afin d'éviter toute configuration ; pour Hotjar, créer un essai gratuit par groupe en amont de la séance 5</li>
+        <li>Figma peut être introduit en option si un prototype est nécessaire comme support du test (à articuler avec un module de prototypage si disponible)</li>
+        <li>Un seul outil de rédaction collaborative (Google Docs ou Notion) doit être choisi dès la séance 2 et conservé jusqu'à la séance 6 pour assurer la continuité du fil rouge</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EVALUATION -->
+  <div class="panel" id="eval">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-amber">📊</span>Modalités d'évaluation</div>
+      <table>
+        <tr><th>Évaluation</th><th>Format</th><th>Séance</th><th>Composantes évaluées</th></tr>
+        <tr><td>CC1 — Dossier protocole</td><td>Livrable écrit (groupe)</td><td>Rendu fin séance 3</td><td>Script de test, grille de recrutement, sélection de profils</td></tr>
+        <tr><td>CC2 — Rapport + soutenance</td><td>Écrit + oral (groupe)</td><td>Séance 7</td><td>Rapport de recommandations, qualité de la restitution, priorisation des findings</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">✅</span>Grille CC1 — Dossier protocole</div>
+      <table>
+        <tr><th>Critère</th><th>Points</th><th>Descripteur de réussite</th></tr>
+        <tr><td>Objectifs et hypothèses</td><td>/4</td><td>Hypothèses testables, formulées de façon mesurable</td></tr>
+        <tr><td>Scénarios de tâches</td><td>/6</td><td>Tâches réalistes, non biaisées, ordre logique</td></tr>
+        <tr><td>Grille de recrutement</td><td>/4</td><td>Critères pertinents, justifiés au regard du protocole</td></tr>
+        <tr><td>Sélection de profils</td><td>/4</td><td>5 profils choisis et exclusions argumentées</td></tr>
+        <tr><td>Cohérence globale</td><td>/2</td><td>Fil rouge clair entre objectifs, tâches et profils</td></tr>
+      </table>
+      <div class="result-panel">Total : <span class="score">/20 points</span></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-purple">🎤</span>Grille CC2 — Rapport et restitution</div>
+      <table>
+        <tr><th>Critère</th><th>Points</th><th>Descripteur de réussite</th></tr>
+        <tr><td>Structure du rapport</td><td>/4</td><td>Synthèse, méthodologie, findings, recommandations clairement organisés</td></tr>
+        <tr><td>Qualité des métriques</td><td>/4</td><td>Métriques correctement calculées et interprétées</td></tr>
+        <tr><td>Priorisation des findings</td><td>/4</td><td>Matrice sévérité/fréquence appliquée, top 5 pertinent</td></tr>
+        <tr><td>Recommandations</td><td>/4</td><td>Recommandations actionnables et justifiées par les findings</td></tr>
+        <tr><td>Expression orale & posture</td><td>/4</td><td>Communication professionnelle, gestion des questions, respect du temps</td></tr>
+      </table>
+      <div class="result-panel">Total : <span class="score">/20 points</span></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">🧰</span>Ressources et outils</div>
+      <div class="grid2">
+        <div>
+          <p style="font-weight:600;margin:0 0 0.4rem;color:#93c5fd;">Matériaux fournis</p>
+          <ul style="font-size:0.85rem;color:var(--muted);">
+            <li>Template de script de test</li>
+            <li>Grille de recrutement type</li>
+            <li>Banque de 15 profils candidats</li>
+            <li>Extraits filmés de sessions de test (bonnes/mauvaises pratiques)</li>
+            <li>Template de rapport de recommandations</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600;margin:0 0 0.4rem;color:#86efac;">Outils (gratuits, sans compte requis si possible)</p>
+          <ul style="font-size:0.85rem;color:var(--muted);">
+            <li>Maze / Lookback (versions découverte)</li>
+            <li>Google Forms + visioconférence</li>
+            <li>Feuille de calcul pour SUS et métriques</li>
+            <li>Figma (si prototype nécessaire pour le test)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>Protocole et Tests Utilisateurs — M1 UX/UI · EEMI · 2025-2026</footer>
+
+<script>
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

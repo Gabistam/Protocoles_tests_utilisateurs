@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Séance 4 — Conduite de session : posture et biais</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#3b82f6;
+  --secondary:#22c55e;
+  --accent:#f59e0b;
+  --danger:#ef4444;
+  --purple:#8b5cf6;
+  --bg:#0f172a;
+  --bg-soft:#1e293b;
+  --border:rgba(148,163,184,0.15);
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Sora',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+}
+code, .mono{font-family:'JetBrains Mono',monospace;}
+
+header.hero{
+  background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1e3a5f 100%);
+  padding:2.5rem 1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.badge{
+  display:inline-block;
+  background:rgba(59,130,246,0.15);
+  border:1px solid rgba(59,130,246,0.4);
+  color:#93c5fd;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.75rem;
+  padding:0.3rem 0.8rem;
+  border-radius:999px;
+  margin-bottom:1rem;
+  letter-spacing:0.05em;
+}
+h1{font-size:2rem;font-weight:800;margin:0 0 0.5rem;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.subtitle{color:var(--muted);margin:0 0 1.5rem;font-size:1rem;}
+.meta-pills{display:flex;flex-wrap:wrap;gap:0.6rem;}
+.pill{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:0.4rem 1rem;
+  font-size:0.85rem;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text);
+}
+.pill .label{color:var(--muted);margin-right:0.3rem;}
+
+main{max-width:1100px;margin:0 auto;padding:1.5rem;}
+
+.tabs{
+  display:flex;
+  gap:0.4rem;
+  overflow-x:auto;
+  padding-bottom:0.5rem;
+  margin-bottom:1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.tab{
+  flex:0 0 auto;
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  font-family:'Sora',sans-serif;
+  font-weight:600;
+  font-size:0.85rem;
+  padding:0.6rem 1.1rem;
+  border-radius:8px 8px 0 0;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.tab:hover{color:var(--text);background:rgba(148,163,184,0.08);}
+.tab.active{color:#fff;background:linear-gradient(135deg,var(--primary),var(--purple));}
+
+.panel{display:none;animation:fade .3s ease;}
+.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.card{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.5rem;
+  margin-bottom:1.2rem;
+}
+.section-title{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:1.15rem;font-weight:700;margin:0 0 1rem;
+  color:#fff;
+}
+.subsection-title{
+  font-size:1rem;font-weight:700;color:#60a5fa;margin:1.4rem 0 0.6rem;
+}
+.icon-bg{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.icon-blue{background:rgba(59,130,246,0.15);}
+.icon-green{background:rgba(34,197,94,0.15);}
+.icon-amber{background:rgba(245,158,11,0.15);}
+.icon-purple{background:rgba(139,92,246,0.15);}
+.icon-red{background:rgba(239,68,68,0.15);}
+
+ul{margin:0;padding-left:1.3rem;}
+ul li{margin-bottom:0.5rem;}
+
+.famille-tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.8rem;}
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;font-weight:700;
+  padding:0.2rem 0.6rem;border-radius:6px;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+.f1{background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);}
+.f2{background:rgba(34,197,94,0.15);color:#86efac;border:1px solid rgba(34,197,94,0.3);}
+.f3{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
+.f4{background:rgba(139,92,246,0.15);color:#c4b5fd;border:1px solid rgba(139,92,246,0.3);}
+.f5{background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
+
+.objectif-box{
+  background:rgba(59,130,246,0.08);
+  border-left:4px solid var(--primary);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-bottom:1rem;font-size:0.9rem;
+}
+.example-card{
+  background:rgba(15,23,42,0.6);
+  border-left:3px solid var(--purple);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-top:0.8rem;font-size:0.88rem;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+@media (max-width:700px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+/* Cost curve */
+.cost-curve{display:flex;align-items:flex-end;gap:0.8rem;height:140px;margin:1rem 0;padding:0 0.5rem;}
+.cost-bar{flex:1;border-radius:8px 8px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;color:#0f172a;}
+.cost-bar-label{text-align:center;font-size:0.78rem;color:var(--muted);margin-top:0.4rem;}
+.cost-cols{display:flex;flex-direction:column;flex:1;}
+
+/* Progress bar */
+.progress-track{
+  height:8px;background:var(--bg);border-radius:999px;overflow:hidden;
+  border:1px solid var(--border);margin-bottom:1.5rem;
+}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .4s ease;}
+
+/* Quiz */
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-size:0.85rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.question-text{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:1.2rem;}
+.quiz-option{
+  background:rgba(30,41,59,0.4);
+  border:2px solid rgba(148,163,184,0.2);
+  transition:all 0.2s ease;
+  cursor:pointer;
+  padding:0.9rem 1.1rem;
+  border-radius:10px;
+  margin-bottom:0.7rem;
+  font-size:0.92rem;
+}
+.quiz-option:hover{background:rgba(30,41,59,0.7);border-color:rgba(96,165,250,0.5);}
+.quiz-option.selected{border-color:var(--primary);background:rgba(59,130,246,0.12);}
+.quiz-option.correct{border-color:var(--secondary);background:rgba(34,197,94,0.15);}
+.quiz-option.incorrect{border-color:var(--danger);background:rgba(239,68,68,0.15);}
+.quiz-option.disabled{cursor:default;}
+
+.feedback-box{
+  margin-top:1rem;padding:1rem 1.2rem;border-radius:0 8px 8px 0;font-size:0.9rem;display:none;
+}
+.feedback-box.correct{background:rgba(34,197,94,0.1);border-left:4px solid var(--secondary);display:block;}
+.feedback-box.incorrect{background:rgba(239,68,68,0.1);border-left:4px solid var(--danger);display:block;}
+
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;}
+.nav-btn{
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+  color:#fff;border:none;padding:0.65rem 1.4rem;border-radius:8px;
+  font-family:'Sora',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .2s;
+}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,0.3);}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.nav-btn.ghost{background:var(--bg-soft);border:1px solid var(--border);}
+
+.result-panel{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;margin-top:1rem;text-align:center;
+}
+.score-badge{
+  background:linear-gradient(135deg,#22c55e 0%,#10b981 100%);
+  color:white;padding:0.5rem 1.2rem;border-radius:9999px;font-weight:700;
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:1.1rem;margin-bottom:0.8rem;
+}
+
+/* Glossaire */
+.glossary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media (max-width:700px){.glossary-grid{grid-template-columns:1fr;}}
+
+.illustration{margin:1.2rem 0;text-align:center;background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.illustration svg{max-width:100%;height:auto;max-height:260px;}
+.illustration img{max-width:100%;height:auto;max-height:320px;border-radius:8px;display:block;margin:0 auto;object-fit:cover;}
+.illustration-caption{font-size:0.8rem;color:var(--muted);margin-top:0.6rem;font-style:italic;}
+.illustration-credit{font-size:0.7rem;color:var(--muted);margin-top:0.2rem;}
+.illustration-credit a{color:var(--muted);text-decoration:none;}
+.illustration-credit a:hover{color:var(--primary);text-decoration:underline;}
+.term-item{
+  background:#0f172a;border:1px solid var(--border);border-radius:10px;
+  padding:1rem 1.1rem;
+}
+.term-name{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;margin-bottom:0.4rem;font-size:0.95rem;}
+.term-def{font-size:0.88rem;color:var(--text);}
+
+footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;border-top:1px solid var(--border);margin-top:2rem;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">M1 UX/UI · SÉANCE 4 · PARTIE THÉORIQUE</span>
+    <h1>Conduite de session : posture et biais</h1>
+    <p class="subtitle">Support de cours interactif — Protocole et Tests Utilisateurs</p>
+    <div class="meta-pills">
+      <span class="pill"><span class="label">Module</span>Protocole et Tests Utilisateurs</span>
+      <span class="pill"><span class="label">Chapitres</span>2</span>
+      <span class="pill"><span class="label">QCM</span>2 × 6 questions</span>
+      <span class="pill"><span class="label">Glossaire</span>14 termes</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="chap1">Chapitre 1</button>
+    <button class="tab" data-tab="qcm1">QCM 1</button>
+    <button class="tab" data-tab="chap2">Chapitre 2</button>
+    <button class="tab" data-tab="qcm2">QCM 2</button>
+    <button class="tab" data-tab="glossaire">Glossaire</button>
+  </div>
+
+  <!-- CHAPITRE 1 -->
+  <div class="panel active" id="chap1">
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">🎯</span>Chapitre 1 — Posture du modérateur et protocole think-aloud</div>
+      <div class="objectif-box">
+        Comprendre le rôle du modérateur pendant une session de test, maîtriser le protocole think-aloud, et identifier les principaux biais liés à la posture de l'observateur pour les éviter en situation réelle.
+      </div>
+
+      <div class="subsection-title">1.1 — Le rôle du modérateur</div>
+      <div class="famille-tags"><span class="tag f1">Fondamentaux</span></div>
+      <p>Le script de test (rédigé en séance 2, transposé en séance 3) prépare le contenu de la session. Mais sa réussite dépend tout autant de la <strong>posture du modérateur</strong> : la personne qui anime la session doit guider sans influencer, observer sans interrompre, et créer un climat de confiance permettant au participant d'agir et de s'exprimer naturellement.</p>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        Le modérateur n'est pas là pour évaluer le participant, mais pour observer comment le <strong>produit</strong> se comporte face à un utilisateur réel. Un participant qui "échoue" une tâche ne révèle pas son incompétence, mais un problème d'interface.
+      </div>
+
+      <div class="subsection-title">1.2 — Le protocole think-aloud</div>
+      <div class="famille-tags"><span class="tag f2">Méthodologie</span></div>
+      <p>Le <strong>think-aloud</strong> (penser à voix haute) consiste à demander au participant de verbaliser en continu ses pensées, intentions et impressions pendant qu'il accomplit les tâches : ce qu'il regarde, ce qu'il s'attend à trouver, pourquoi il clique à tel endroit.</p>
+      <ul>
+        <li><strong>Avant la tâche</strong> : expliquer le principe et faire une courte démonstration si besoin ("dites-moi tout ce qui vous passe par la tête, même si ça semble évident")</li>
+        <li><strong>Pendant la tâche</strong> : relancer doucement si le participant devient silencieux ("qu'est-ce que vous regardez actuellement ?"), sans interrompre son raisonnement</li>
+        <li><strong>Limite à connaître</strong> : verbaliser peut légèrement modifier le comportement naturel (charge cognitive supplémentaire) — c'est un compromis accepté pour accéder au raisonnement</li>
+      </ul>
+
+      <div class="illustration">
+        <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?auto=format&fit=crop&w=1200&q=80" alt="Personne utilisant un ordinateur portable pendant qu'une autre observe et prend des notes">
+        <div class="illustration-caption">En think-aloud, le participant verbalise en continu pendant que l'observateur note sans intervenir</div>
+        <div class="illustration-credit">Photo : <a href="https://unsplash.com/@campaign_creators" target="_blank" rel="noopener">Campaign Creators</a> sur <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></div>
+      </div>
+
+      <div class="subsection-title">1.3 — Relances neutres pour maintenir la verbalisation</div>
+      <div class="famille-tags"><span class="tag f3">Pratique</span></div>
+      <p>Lorsque le participant devient silencieux, le modérateur peut relancer — mais la formulation de la relance ne doit jamais orienter vers une action ou un jugement :</p>
+      <div class="grid2">
+        <div class="example-card" style="border-left-color:var(--danger);">
+          <strong style="color:#fca5a5;">✗ Relance orientée</strong><br>
+          <em>"Vous avez vu le bouton en bas à droite ?"</em><br>
+          Révèle l'emplacement de la solution et interrompt le raisonnement du participant.
+        </div>
+        <div class="example-card">
+          <strong style="color:#86efac;">✓ Relance neutre</strong><br>
+          <em>"À quoi pensez-vous en ce moment ?"</em> ou <em>"Qu'est-ce que vous cherchez actuellement ?"</em><br>
+          Remet le participant en mode verbalisation sans donner d'indice.
+        </div>
+      </div>
+
+      <div class="subsection-title">1.4 — Le biais de l'observateur</div>
+      <div class="famille-tags"><span class="tag f4">Anti-biais</span></div>
+      <p>Le <strong>biais de l'observateur</strong> désigne l'influence — souvent involontaire — du modérateur sur le comportement ou les réponses du participant. Il peut prendre plusieurs formes :</p>
+      <ul>
+        <li><strong>Réactions non verbales</strong> : sourire, froncement de sourcils, hochement de tête qui signale au participant qu'il est sur la "bonne" ou la "mauvaise" voie</li>
+        <li><strong>Aide prématurée</strong> : intervenir dès qu'un participant hésite, ce qui empêche d'observer comment il aurait résolu seul la difficulté</li>
+        <li><strong>Effet de désirabilité sociale</strong> : le participant a tendance à formuler des retours plus positifs en présence du créateur du produit, par politesse</li>
+      </ul>
+
+      <div class="subsection-title">1.5 — Neutralité et gestion des silences</div>
+      <div class="famille-tags"><span class="tag f5">Posture</span></div>
+      <p>Un silence pendant une session n'est pas un problème à résoudre dans l'urgence : il peut signaler une réflexion en cours, une hésitation, ou un point de friction réel — toutes des informations utiles. Le modérateur apprend à <strong>tolérer l'inconfort du silence</strong> quelques secondes avant de relancer, plutôt que d'intervenir immédiatement.</p>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        Un participant bloqué qui finit par trouver seul (même après un long silence) fournit une information précieuse : ce chemin existe, mais il est coûteux. Intervenir trop vite efface cette donnée.
+      </div>
+    </div>
+  </div>
+
+  <!-- QCM 1 -->
+  <div class="panel" id="qcm1">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">📝</span>QCM 1 — Posture du modérateur et think-aloud</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-qcm1" style="width:0%"></div></div>
+      <div class="quiz-meta">
+        <span id="qcm1-counter">Question 1 / 6</span>
+        <span id="qcm1-status"></span>
+      </div>
+      <div id="qcm1-question"></div>
+      <div id="qcm1-options"></div>
+      <div id="qcm1-feedback" class="feedback-box"></div>
+      <div class="quiz-nav">
+        <button class="nav-btn ghost" id="qcm1-prev" onclick="navQuiz('qcm1',-1)">← Précédent</button>
+        <button class="nav-btn" id="qcm1-next" onclick="navQuiz('qcm1',1)" disabled>Suivant →</button>
+      </div>
+      <div id="qcm1-result" class="result-panel" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- CHAPITRE 2 -->
+  <div class="panel" id="chap2">
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">📋</span>Chapitre 2 — Identifier les erreurs de modération et s'entraîner par jeu de rôle</div>
+      <div class="objectif-box">
+        Savoir repérer les erreurs de modération courantes dans une session filmée, comprendre le déroulé d'un jeu de rôle en rotation de rôles, et identifier les biais observés pour les corriger lors des passages suivants.
+      </div>
+
+      <div class="subsection-title">2.1 — Les trois rôles d'une session encadrée</div>
+      <div class="famille-tags"><span class="tag f1">Fondamentaux</span></div>
+      <p>Pour s'entraîner, une session de test peut être simulée en petit groupe avec trois rôles distincts :</p>
+      <ul>
+        <li><strong>Le modérateur</strong> : anime la session, applique le script transposé en séance 3, gère le think-aloud et les relances</li>
+        <li><strong>Le participant</strong> : incarne le profil cible et réalise les tâches en verbalisant ses pensées</li>
+        <li><strong>L'observateur</strong> : note les biais de modération, les moments de silence, les réactions non verbales — sans intervenir</li>
+      </ul>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        Faire tourner les trois rôles permet à chaque étudiant de vivre la session depuis chaque position : on repère beaucoup mieux les biais de modération quand on les a soi-même commis ou observés de l'intérieur.
+      </div>
+
+      <div class="subsection-title">2.2 — Identifier les erreurs sur une session filmée</div>
+      <div class="famille-tags"><span class="tag f2">Analyse</span></div>
+      <p>Avant de se lancer dans le jeu de rôle, observer une session filmée (test bien mené vs test biaisé) permet d'identifier collectivement les erreurs sans pression. Les points à surveiller correspondent directement aux notions du chapitre 1 :</p>
+
+      <div class="illustration">
+        <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80" alt="Écran d'ordinateur affichant un enregistrement vidéo en cours de visionnage">
+        <div class="illustration-caption">Visionner une session filmée permet d'identifier les biais de modération à tête reposée, avant de les vivre en jeu de rôle</div>
+        <div class="illustration-credit">Photo : <a href="https://unsplash.com/@homajob" target="_blank" rel="noopener">Bench Accounting</a> sur <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></div>
+      </div>
+
+      <div class="grid2">
+        <div class="example-card" style="border-left-color:var(--danger);">
+          <strong style="color:#fca5a5;">Signaux à repérer — test biaisé</strong><br>
+          Aide donnée trop tôt, relances qui révèlent la solution, réactions du modérateur (sourires, soupirs), formulations qui présupposent une réponse positive.
+        </div>
+        <div class="example-card">
+          <strong style="color:#86efac;">Signaux à repérer — test bien mené</strong><br>
+          Relances neutres, tolérance du silence, verbalisation maintenue par le participant, modérateur qui reste en retrait pendant les tâches.
+        </div>
+      </div>
+
+      <div class="subsection-title">2.3 — Déroulé du jeu de rôle en rounds</div>
+      <div class="famille-tags"><span class="tag f3">Structuration</span></div>
+      <p>Le jeu de rôle se déroule en plusieurs rounds, avec un débrief intermédiaire entre chaque :</p>
+      <ul>
+        <li><strong>Round 1</strong> : premier passage du script transposé en séance 3, avec les rôles attribués (modérateur / participant / observateur)</li>
+        <li><strong>Débrief intermédiaire</strong> : retour collectif sur les erreurs de modération observées, ajustements avant le round suivant</li>
+        <li><strong>Rounds 2 et 3</strong> : rotation des rôles — chaque étudiant passe modérateur et observateur au moins une fois</li>
+      </ul>
+      <div class="example-card">
+        <strong style="color:#fcd34d;">Pourquoi un débrief entre les rounds ?</strong><br>
+        Corriger une erreur de modération immédiatement après l'avoir observée (et non en fin de séance) permet de la travailler concrètement dès le round suivant, plutôt que de l'accumuler sans retour.
+      </div>
+
+      <div class="subsection-title">2.4 — Que noter en tant qu'observateur ?</div>
+      <div class="famille-tags"><span class="tag f4">Pratique</span></div>
+      <p>L'observateur ne se contente pas de "regarder" : il documente des éléments précis, réutilisables lors du débrief :</p>
+      <ul>
+        <li><strong>Moments de silence</strong> : durée approximative, et si le modérateur est intervenu trop tôt ou a bien laissé le temps</li>
+        <li><strong>Relances</strong> : formulation exacte utilisée, neutre ou orientée</li>
+        <li><strong>Réactions non verbales</strong> du modérateur (visibles ou audibles) pendant que le participant agit</li>
+        <li><strong>Aide apportée</strong> : à quel moment, et si la tâche aurait pu se poursuivre sans elle</li>
+      </ul>
+
+      <div class="subsection-title">2.5 — Synthèse individuelle des biais observés</div>
+      <div class="famille-tags"><span class="tag f5">Réflexivité</span></div>
+      <p>À la fin des rounds, chaque étudiant formalise une courte synthèse personnelle : quels biais a-t-il commis en tant que modérateur, lesquels a-t-il observés chez les autres, et surtout — comment les corriger lors d'une prochaine session ?</p>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        La posture du modérateur ne s'acquiert pas en lisant une liste de bonnes pratiques, mais par la répétition et le retour sur ses propres erreurs. Le jeu de rôle en rotation sert précisément cet objectif avant la conduite de tests réels en séance 5.
+      </div>
+    </div>
+  </div>
+
+  <!-- QCM 2 -->
+  <div class="panel" id="qcm2">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">📝</span>QCM 2 — Erreurs de modération et jeu de rôle</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-qcm2" style="width:0%"></div></div>
+      <div class="quiz-meta">
+        <span id="qcm2-counter">Question 1 / 6</span>
+        <span id="qcm2-status"></span>
+      </div>
+      <div id="qcm2-question"></div>
+      <div id="qcm2-options"></div>
+      <div id="qcm2-feedback" class="feedback-box"></div>
+      <div class="quiz-nav">
+        <button class="nav-btn ghost" id="qcm2-prev" onclick="navQuiz('qcm2',-1)">← Précédent</button>
+        <button class="nav-btn" id="qcm2-next" onclick="navQuiz('qcm2',1)" disabled>Suivant →</button>
+      </div>
+      <div id="qcm2-result" class="result-panel" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- GLOSSAIRE -->
+  <div class="panel" id="glossaire">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-amber">📖</span>Glossaire — 14 termes clés</div>
+      <div class="glossary-grid">
+        <div class="term-item"><div class="term-name">Modérateur</div><div class="term-def">Personne qui anime une session de test : guide sans influencer, observe sans interrompre et applique le script préparé.</div></div>
+        <div class="term-item"><div class="term-name">Think-aloud</div><div class="term-def">Protocole consistant à demander au participant de verbaliser en continu ses pensées et intentions pendant qu'il réalise les tâches.</div></div>
+        <div class="term-item"><div class="term-name">Relance neutre</div><div class="term-def">Question posée par le modérateur pour maintenir la verbalisation sans orienter le participant vers une action ou un jugement.</div></div>
+        <div class="term-item"><div class="term-name">Biais de l'observateur</div><div class="term-def">Influence involontaire du modérateur sur le comportement ou les réponses du participant, via réactions, aide ou formulations.</div></div>
+        <div class="term-item"><div class="term-name">Effet de désirabilité sociale</div><div class="term-def">Tendance du participant à donner des retours plus positifs par politesse, notamment en présence du créateur du produit.</div></div>
+        <div class="term-item"><div class="term-name">Aide prématurée</div><div class="term-def">Intervention du modérateur dès qu'un participant hésite, empêchant d'observer comment il aurait résolu seul la difficulté.</div></div>
+        <div class="term-item"><div class="term-name">Tolérance du silence</div><div class="term-def">Capacité du modérateur à laisser un participant silencieux quelques secondes avant de relancer, le silence pouvant signaler une réflexion utile.</div></div>
+        <div class="term-item"><div class="term-name">Session encadrée</div><div class="term-def">Simulation de test en groupe avec trois rôles : modérateur, participant et observateur.</div></div>
+        <div class="term-item"><div class="term-name">Observateur</div><div class="term-def">Rôle chargé de noter les biais de modération, silences et réactions non verbales pendant la session, sans intervenir.</div></div>
+        <div class="term-item"><div class="term-name">Round</div><div class="term-def">Passage complet du script lors d'un jeu de rôle, suivi d'un débrief avant le round suivant.</div></div>
+        <div class="term-item"><div class="term-name">Débrief intermédiaire</div><div class="term-def">Retour collectif sur les erreurs de modération observées lors d'un round, permettant des ajustements avant le round suivant.</div></div>
+        <div class="term-item"><div class="term-name">Rotation des rôles</div><div class="term-def">Principe consistant à faire passer chaque étudiant par les rôles de modérateur, participant et observateur au cours des rounds.</div></div>
+        <div class="term-item"><div class="term-name">Test biaisé</div><div class="term-def">Session de test où la formulation, l'aide ou les réactions du modérateur ont influencé le comportement ou les réponses du participant.</div></div>
+        <div class="term-item"><div class="term-name">Synthèse réflexive</div><div class="term-def">Bilan individuel des biais commis ou observés pendant les jeux de rôle, formulé pour préparer les sessions réelles à venir.</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Protocole et Tests Utilisateurs — M1 UX/UI · Séance 4 · EEMI · 2025-2026</footer>
+
+<script>
+// Fisher-Yates shuffle
+function shuffleArray(array) {
+  const a = [...array];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// QCM 1 — Chapitre 1 : Posture du modérateur et think-aloud
+const qcm1Data = [
+  {
+    q: "Le rôle principal du modérateur pendant une session de test est de :",
+    options: [
+      { text: "Évaluer les compétences du participant", correct: false },
+      { text: "Guider sans influencer et observer comment le produit se comporte face à l'utilisateur", correct: true },
+      { text: "Corriger les erreurs du participant au fur et à mesure", correct: false },
+      { text: "Faire respecter strictement le timing prévu, quitte à interrompre la verbalisation", correct: false }
+    ],
+    explanation: "Le modérateur observe le produit à travers le comportement de l'utilisateur, sans chercher à évaluer ou corriger ce dernier."
+  },
+  {
+    q: "Le protocole think-aloud consiste à demander au participant de :",
+    options: [
+      { text: "Répondre uniquement aux questions posées par le modérateur", correct: false },
+      { text: "Verbaliser en continu ses pensées et intentions pendant qu'il réalise les tâches", correct: true },
+      { text: "Décrire le produit après la fin de toutes les tâches", correct: false },
+      { text: "Travailler en silence pour ne pas biaiser ses gestes", correct: false }
+    ],
+    explanation: "Le think-aloud vise à accéder au raisonnement du participant en temps réel, pendant l'action elle-même."
+  },
+  {
+    q: "Une limite connue du think-aloud est que :",
+    options: [
+      { text: "Il ne peut être utilisé qu'en test non-modéré", correct: false },
+      { text: "Verbaliser peut légèrement modifier le comportement naturel du participant", correct: true },
+      { text: "Il remplace entièrement les questions post-test", correct: false },
+      { text: "Il nécessite obligatoirement un échantillon de plus de 5 participants", correct: false }
+    ],
+    explanation: "La verbalisation ajoute une charge cognitive, ce qui peut légèrement modifier le comportement par rapport à un usage silencieux — un compromis accepté pour observer le raisonnement."
+  },
+  {
+    q: "\"Vous avez vu le bouton en bas à droite ?\" est un exemple de :",
+    options: [
+      { text: "Relance neutre", correct: false },
+      { text: "Relance orientée révélant la solution", correct: true },
+      { text: "Question post-test standard", correct: false },
+      { text: "Critère d'exclusion du recrutement", correct: false }
+    ],
+    explanation: "Cette relance révèle l'emplacement de la solution et interrompt le raisonnement du participant : elle est orientée, pas neutre."
+  },
+  {
+    q: "Le biais de l'observateur désigne :",
+    options: [
+      { text: "Une erreur dans le calcul des métriques UX", correct: false },
+      { text: "L'influence involontaire du modérateur sur le comportement ou les réponses du participant", correct: true },
+      { text: "Un défaut technique de l'outil de test à distance", correct: false },
+      { text: "Le fait qu'un participant ne corresponde pas aux critères de recrutement", correct: false }
+    ],
+    explanation: "Le biais de l'observateur regroupe les influences involontaires (réactions, aide, formulations) du modérateur sur le participant."
+  },
+  {
+    q: "Face à un silence prolongé du participant, la bonne pratique du modérateur est de :",
+    options: [
+      { text: "Intervenir immédiatement pour éviter tout inconfort", correct: false },
+      { text: "Tolérer quelques secondes de silence avant de relancer de façon neutre", correct: true },
+      { text: "Passer directement à la tâche suivante", correct: false },
+      { text: "Donner un indice pour accélérer la session", correct: false }
+    ],
+    explanation: "Le silence peut signaler une réflexion ou une friction réelle ; intervenir trop vite efface cette information utile."
+  }
+];
+
+// QCM 2 — Chapitre 2 : Identifier les erreurs de modération et jeu de rôle
+const qcm2Data = [
+  {
+    q: "Dans une session encadrée à trois rôles, l'observateur a pour mission de :",
+    options: [
+      { text: "Aider le participant si le modérateur n'intervient pas assez vite", correct: false },
+      { text: "Noter les biais de modération, silences et réactions non verbales sans intervenir", correct: true },
+      { text: "Remplacer le modérateur en cas d'erreur", correct: false },
+      { text: "Évaluer la performance du participant sur les tâches", correct: false }
+    ],
+    explanation: "L'observateur documente le déroulé de la session pour nourrir le débrief, sans jamais intervenir pendant le round."
+  },
+  {
+    q: "Visionner une session filmée avant le jeu de rôle permet principalement de :",
+    options: [
+      { text: "Remplacer la rédaction du script", correct: false },
+      { text: "Identifier collectivement les erreurs de modération sans pression avant de les vivre soi-même", correct: true },
+      { text: "Déterminer la taille de l'échantillon à recruter", correct: false },
+      { text: "Calculer le score SUS du produit", correct: false }
+    ],
+    explanation: "Observer une session filmée à tête reposée prépare les étudiants à reconnaître les mêmes signaux pendant leur propre jeu de rôle."
+  },
+  {
+    q: "Dans le déroulé en rounds, le débrief intermédiaire a pour objectif de :",
+    options: [
+      { text: "Noter une évaluation chiffrée de chaque étudiant", correct: false },
+      { text: "Permettre de corriger les erreurs observées avant le round suivant", correct: true },
+      { text: "Remplacer le round 3", correct: false },
+      { text: "Décider qui jouera le rôle de modérateur au round suivant uniquement", correct: false }
+    ],
+    explanation: "Le débrief intermédiaire sert à ajuster la pratique immédiatement, plutôt que d'accumuler les erreurs jusqu'en fin de séance."
+  },
+  {
+    q: "La rotation des rôles entre les rounds permet à chaque étudiant de :",
+    options: [
+      { text: "Éviter de jouer le rôle de modérateur", correct: false },
+      { text: "Vivre la session depuis plusieurs positions et mieux repérer les biais de modération", correct: true },
+      { text: "Choisir le profil de participant le plus proche du sien", correct: false },
+      { text: "Réduire la durée totale du jeu de rôle", correct: false }
+    ],
+    explanation: "Occuper successivement les trois rôles aide à reconnaître les biais qu'on a soi-même commis ou observés."
+  },
+  {
+    q: "Lorsqu'un modérateur apporte de l'aide dès la première hésitation du participant, cela illustre :",
+    options: [
+      { text: "Une bonne pratique de relance neutre", correct: false },
+      { text: "Une aide prématurée empêchant d'observer comment le participant aurait résolu seul la difficulté", correct: true },
+      { text: "Le protocole think-aloud correctement appliqué", correct: false },
+      { text: "Une question post-test standard", correct: false }
+    ],
+    explanation: "Intervenir trop tôt prive la session d'une information clé : le participant aurait-il pu résoudre la difficulté seul ?"
+  },
+  {
+    q: "La synthèse individuelle réalisée en fin de séance vise à :",
+    options: [
+      { text: "Calculer le score SUS de la session", correct: false },
+      { text: "Formaliser les biais commis ou observés et réfléchir à comment les corriger pour les sessions réelles", correct: true },
+      { text: "Définir les critères de recrutement de la séance suivante", correct: false },
+      { text: "Remplacer le débrief intermédiaire", correct: false }
+    ],
+    explanation: "Cette synthèse réflexive prépare les étudiants à la conduite de tests réels en séance 5, en capitalisant sur leurs propres erreurs observées."
+  }
+];
+
+// Anti-cheat : l'ordre des questions est conservé pour la progression pédagogique,
+// mais les options sont mélangées au rendu, et leur longueur varie volontairement
+// d'une question à l'autre — la bonne réponse n'est pas toujours la plus longue.
+const quizState = {
+  qcm1: { data: qcm1Data, current: 0, answers: new Array(qcm1Data.length).fill(null), shuffled: [] },
+  qcm2: { data: qcm2Data, current: 0, answers: new Array(qcm2Data.length).fill(null), shuffled: [] }
+};
+
+function initQuiz(quizId) {
+  const state = quizState[quizId];
+  state.shuffled = state.data.map(q => ({ ...q, options: shuffleArray(q.options) }));
+  renderQuestion(quizId);
+}
+
+function renderQuestion(quizId) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+  const idx = state.current;
+  const q = state.shuffled[idx];
+
+  document.getElementById(`${quizId}-counter`).textContent = `Question ${idx + 1} / ${total}`;
+  document.getElementById(`progress-${quizId}`).style.width = `${(idx / total) * 100}%`;
+
+  const qDiv = document.getElementById(`${quizId}-question`);
+  qDiv.innerHTML = `<div class="question-text">${q.q}</div>`;
+
+  const optDiv = document.getElementById(`${quizId}-options`);
+  optDiv.innerHTML = '';
+
+  const userAnswer = state.answers[idx];
+
+  q.options.forEach((opt, optIndex) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-option';
+    div.textContent = opt.text;
+
+    if (userAnswer !== null) {
+      div.classList.add('disabled');
+      if (optIndex === userAnswer) {
+        div.classList.add(opt.correct ? 'correct' : 'incorrect', 'selected');
+      } else if (opt.correct) {
+        div.classList.add('correct');
+      }
+    } else {
+      div.onclick = () => selectOption(quizId, optIndex);
+    }
+    optDiv.appendChild(div);
+  });
+
+  const feedbackDiv = document.getElementById(`${quizId}-feedback`);
+  feedbackDiv.className = 'feedback-box';
+  feedbackDiv.innerHTML = '';
+  if (userAnswer !== null) {
+    const wasCorrect = q.options[userAnswer].correct;
+    feedbackDiv.classList.add(wasCorrect ? 'correct' : 'incorrect');
+    feedbackDiv.innerHTML = `${wasCorrect ? '✓ Correct.' : '✗ Incorrect.'} ${q.explanation}`;
+  }
+
+  document.getElementById(`${quizId}-prev`).disabled = (idx === 0);
+  const nextBtn = document.getElementById(`${quizId}-next`);
+  nextBtn.disabled = (userAnswer === null);
+  nextBtn.textContent = (idx === total - 1) ? 'Voir le score →' : 'Suivant →';
+
+  document.getElementById(`${quizId}-result`).style.display = 'none';
+}
+
+function selectOption(quizId, optIndex) {
+  const state = quizState[quizId];
+  state.answers[state.current] = optIndex;
+  renderQuestion(quizId);
+}
+
+function navQuiz(quizId, direction) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+
+  if (direction === 1 && state.current === total - 1) {
+    showResult(quizId);
+    return;
+  }
+
+  state.current = Math.max(0, Math.min(total - 1, state.current + direction));
+  renderQuestion(quizId);
+}
+
+function showResult(quizId) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+  let score = 0;
+  state.shuffled.forEach((q, i) => {
+    const ans = state.answers[i];
+    if (ans !== null && q.options[ans].correct) score++;
+  });
+
+  document.getElementById(`progress-${quizId}`).style.width = '100%';
+
+  const resultDiv = document.getElementById(`${quizId}-result`);
+  resultDiv.style.display = 'block';
+  const percentage = Math.round((score / total) * 100);
+  resultDiv.innerHTML = `
+    <div class="score-badge">Score : ${score} / ${total} (${percentage}%)</div>
+    <div style="margin-top:0.8rem;">
+      <button class="nav-btn ghost" onclick="restartQuiz('${quizId}')">↻ Recommencer le QCM</button>
+    </div>
+  `;
+  resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function restartQuiz(quizId) {
+  const state = quizState[quizId];
+  state.current = 0;
+  state.answers = new Array(state.data.length).fill(null);
+  initQuiz(quizId);
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Init
+initQuiz('qcm1');
+initQuiz('qcm2');
+</script>
+
+</body>
+</html>

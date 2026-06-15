@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Séance 3 — Recrutement et échantillonnage</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#3b82f6;
+  --secondary:#22c55e;
+  --accent:#f59e0b;
+  --danger:#ef4444;
+  --purple:#8b5cf6;
+  --bg:#0f172a;
+  --bg-soft:#1e293b;
+  --border:rgba(148,163,184,0.15);
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Sora',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+}
+code, .mono{font-family:'JetBrains Mono',monospace;}
+
+header.hero{
+  background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1e3a5f 100%);
+  padding:2.5rem 1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.badge{
+  display:inline-block;
+  background:rgba(59,130,246,0.15);
+  border:1px solid rgba(59,130,246,0.4);
+  color:#93c5fd;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.75rem;
+  padding:0.3rem 0.8rem;
+  border-radius:999px;
+  margin-bottom:1rem;
+  letter-spacing:0.05em;
+}
+h1{font-size:2rem;font-weight:800;margin:0 0 0.5rem;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.subtitle{color:var(--muted);margin:0 0 1.5rem;font-size:1rem;}
+.meta-pills{display:flex;flex-wrap:wrap;gap:0.6rem;}
+.pill{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:0.4rem 1rem;
+  font-size:0.85rem;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text);
+}
+.pill .label{color:var(--muted);margin-right:0.3rem;}
+
+main{max-width:1100px;margin:0 auto;padding:1.5rem;}
+
+.tabs{
+  display:flex;
+  gap:0.4rem;
+  overflow-x:auto;
+  padding-bottom:0.5rem;
+  margin-bottom:1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.tab{
+  flex:0 0 auto;
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  font-family:'Sora',sans-serif;
+  font-weight:600;
+  font-size:0.85rem;
+  padding:0.6rem 1.1rem;
+  border-radius:8px 8px 0 0;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.tab:hover{color:var(--text);background:rgba(148,163,184,0.08);}
+.tab.active{color:#fff;background:linear-gradient(135deg,var(--primary),var(--purple));}
+
+.panel{display:none;animation:fade .3s ease;}
+.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.card{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.5rem;
+  margin-bottom:1.2rem;
+}
+.section-title{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:1.15rem;font-weight:700;margin:0 0 1rem;
+  color:#fff;
+}
+.subsection-title{
+  font-size:1rem;font-weight:700;color:#60a5fa;margin:1.4rem 0 0.6rem;
+}
+.icon-bg{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.icon-blue{background:rgba(59,130,246,0.15);}
+.icon-green{background:rgba(34,197,94,0.15);}
+.icon-amber{background:rgba(245,158,11,0.15);}
+.icon-purple{background:rgba(139,92,246,0.15);}
+.icon-red{background:rgba(239,68,68,0.15);}
+
+ul{margin:0;padding-left:1.3rem;}
+ul li{margin-bottom:0.5rem;}
+
+.famille-tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.8rem;}
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;font-weight:700;
+  padding:0.2rem 0.6rem;border-radius:6px;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+.f1{background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);}
+.f2{background:rgba(34,197,94,0.15);color:#86efac;border:1px solid rgba(34,197,94,0.3);}
+.f3{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
+.f4{background:rgba(139,92,246,0.15);color:#c4b5fd;border:1px solid rgba(139,92,246,0.3);}
+.f5{background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
+
+.objectif-box{
+  background:rgba(59,130,246,0.08);
+  border-left:4px solid var(--primary);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-bottom:1rem;font-size:0.9rem;
+}
+.example-card{
+  background:rgba(15,23,42,0.6);
+  border-left:3px solid var(--purple);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-top:0.8rem;font-size:0.88rem;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+@media (max-width:700px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+/* Cost curve */
+.cost-curve{display:flex;align-items:flex-end;gap:0.8rem;height:140px;margin:1rem 0;padding:0 0.5rem;}
+.cost-bar{flex:1;border-radius:8px 8px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;color:#0f172a;}
+.cost-bar-label{text-align:center;font-size:0.78rem;color:var(--muted);margin-top:0.4rem;}
+.cost-cols{display:flex;flex-direction:column;flex:1;}
+
+/* Progress bar */
+.progress-track{
+  height:8px;background:var(--bg);border-radius:999px;overflow:hidden;
+  border:1px solid var(--border);margin-bottom:1.5rem;
+}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .4s ease;}
+
+/* Quiz */
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-size:0.85rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.question-text{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:1.2rem;}
+.quiz-option{
+  background:rgba(30,41,59,0.4);
+  border:2px solid rgba(148,163,184,0.2);
+  transition:all 0.2s ease;
+  cursor:pointer;
+  padding:0.9rem 1.1rem;
+  border-radius:10px;
+  margin-bottom:0.7rem;
+  font-size:0.92rem;
+}
+.quiz-option:hover{background:rgba(30,41,59,0.7);border-color:rgba(96,165,250,0.5);}
+.quiz-option.selected{border-color:var(--primary);background:rgba(59,130,246,0.12);}
+.quiz-option.correct{border-color:var(--secondary);background:rgba(34,197,94,0.15);}
+.quiz-option.incorrect{border-color:var(--danger);background:rgba(239,68,68,0.15);}
+.quiz-option.disabled{cursor:default;}
+
+.feedback-box{
+  margin-top:1rem;padding:1rem 1.2rem;border-radius:0 8px 8px 0;font-size:0.9rem;display:none;
+}
+.feedback-box.correct{background:rgba(34,197,94,0.1);border-left:4px solid var(--secondary);display:block;}
+.feedback-box.incorrect{background:rgba(239,68,68,0.1);border-left:4px solid var(--danger);display:block;}
+
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;}
+.nav-btn{
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+  color:#fff;border:none;padding:0.65rem 1.4rem;border-radius:8px;
+  font-family:'Sora',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .2s;
+}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,0.3);}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.nav-btn.ghost{background:var(--bg-soft);border:1px solid var(--border);}
+
+.result-panel{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;margin-top:1rem;text-align:center;
+}
+.score-badge{
+  background:linear-gradient(135deg,#22c55e 0%,#10b981 100%);
+  color:white;padding:0.5rem 1.2rem;border-radius:9999px;font-weight:700;
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:1.1rem;margin-bottom:0.8rem;
+}
+
+/* Glossaire */
+.glossary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media (max-width:700px){.glossary-grid{grid-template-columns:1fr;}}
+
+.illustration{margin:1.2rem 0;text-align:center;background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.illustration svg{max-width:100%;height:auto;max-height:260px;}
+.illustration img{max-width:100%;height:auto;max-height:320px;border-radius:8px;display:block;margin:0 auto;object-fit:cover;}
+.illustration-caption{font-size:0.8rem;color:var(--muted);margin-top:0.6rem;font-style:italic;}
+.illustration-credit{font-size:0.7rem;color:var(--muted);margin-top:0.2rem;}
+.illustration-credit a{color:var(--muted);text-decoration:none;}
+.illustration-credit a:hover{color:var(--primary);text-decoration:underline;}
+.term-item{
+  background:#0f172a;border:1px solid var(--border);border-radius:10px;
+  padding:1rem 1.1rem;
+}
+.term-name{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;margin-bottom:0.4rem;font-size:0.95rem;}
+.term-def{font-size:0.88rem;color:var(--text);}
+
+footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;border-top:1px solid var(--border);margin-top:2rem;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">M1 UX/UI · SÉANCE 3 · PARTIE THÉORIQUE</span>
+    <h1>Recrutement et échantillonnage</h1>
+    <p class="subtitle">Support de cours interactif — Protocole et Tests Utilisateurs</p>
+    <div class="meta-pills">
+      <span class="pill"><span class="label">Module</span>Protocole et Tests Utilisateurs</span>
+      <span class="pill"><span class="label">Chapitres</span>2</span>
+      <span class="pill"><span class="label">QCM</span>2 × 6 questions</span>
+      <span class="pill"><span class="label">Glossaire</span>14 termes</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="chap1">Chapitre 1</button>
+    <button class="tab" data-tab="qcm1">QCM 1</button>
+    <button class="tab" data-tab="chap2">Chapitre 2</button>
+    <button class="tab" data-tab="qcm2">QCM 2</button>
+    <button class="tab" data-tab="glossaire">Glossaire</button>
+  </div>
+
+  <!-- CHAPITRE 1 -->
+  <div class="panel active" id="chap1">
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">🎯</span>Chapitre 1 — Du protocole méthodologique au fil rouge</div>
+      <div class="objectif-box">
+        Découvrir le produit fil rouge, transposer la méthodologie de rédaction de script vue en séance 2, et savoir définir des critères de recrutement pertinents tout en identifiant les biais de sélection à éviter.
+      </div>
+
+      <div class="subsection-title">1.1 — Du cas d'exemple au fil rouge</div>
+      <div class="famille-tags"><span class="tag f1">Transition</span></div>
+      <p>Les séances 1 et 2 ont permis d'apprendre la méthodologie sur un <strong>cas d'exemple</strong> : panorama des méthodes de test, puis rédaction d'un script complet (objectifs, hypothèses, tâches, questions pré/post-test). À partir de cette séance, ce même travail méthodologique va être <strong>transposé</strong> sur le <strong>fil rouge</strong> : un produit fictif qui servira de support jusqu'à la fin du module.</p>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        La méthode ne change pas : seul le <strong>contexte</strong> change. Les compétences acquises sur le cas d'exemple (formuler des hypothèses testables, écrire des tâches orientées but, structurer un script) s'appliquent directement au fil rouge.
+      </div>
+
+      <div class="subsection-title">1.2 — Transposer le script : ce qui doit être adapté</div>
+      <div class="famille-tags"><span class="tag f2">Méthodologie</span></div>
+      <p>Transposer un script méthodologique ne consiste pas à le réécrire intégralement, mais à reprendre chaque bloc construit en séance 2 et à l'ajuster au nouveau contexte :</p>
+      <ul>
+        <li><strong>Objectif de test</strong> : reformuler à partir du besoin business propre au fil rouge</li>
+        <li><strong>Hypothèses</strong> : vérifier qu'elles restent spécifiques, observables et falsifiables une fois appliquées au nouveau produit</li>
+        <li><strong>Scénarios de tâches</strong> : adapter le vocabulaire et le contexte d'usage, en conservant une formulation orientée but et neutre</li>
+        <li><strong>Questions pré/post-test</strong> : ajuster les questions de profil au public cible du fil rouge</li>
+      </ul>
+
+      <div class="illustration">
+        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80" alt="Équipe travaillant ensemble autour d'un tableau de planification">
+        <div class="illustration-caption">Transposer un protocole, c'est réutiliser une structure éprouvée tout en l'adaptant à un nouveau contexte produit</div>
+        <div class="illustration-credit">Photo : <a href="https://unsplash.com/@helloimnik" target="_blank" rel="noopener">Hello I'm Nik</a> sur <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></div>
+      </div>
+
+      <div class="subsection-title">1.3 — Pourquoi recruter les bons participants ?</div>
+      <div class="famille-tags"><span class="tag f3">Fondamentaux</span></div>
+      <p>Un script de test parfaitement rédigé ne produit aucun résultat utile s'il est testé par les <strong>mauvais participants</strong>. Le recrutement conditionne directement la validité des observations : un retour de quelqu'un qui n'appartient pas à la cible n'apporte pas d'information exploitable sur le comportement réel des utilisateurs visés.</p>
+      <div class="example-card">
+        <strong style="color:#fcd34d;">Exemple</strong><br>
+        Tester l'interface d'une application de gestion de budget étudiant auprès de cadres en milieu de carrière donnera des retours peu pertinents : leurs usages, contraintes et attentes financières diffèrent trop de la cible réelle.
+      </div>
+
+      <div class="subsection-title">1.4 — Critères d'inclusion et d'exclusion</div>
+      <div class="famille-tags"><span class="tag f4">Recrutement</span></div>
+      <p>Un critère de recrutement définit une condition que doit remplir (ou ne pas remplir) un participant pour être retenu :</p>
+      <div class="grid2">
+        <div class="example-card">
+          <strong style="color:#86efac;">Critères d'inclusion</strong><br>
+          Caractéristiques que le participant <strong>doit</strong> avoir : tranche d'âge, statut (étudiant, actif), fréquence d'usage d'un type de produit, niveau de maîtrise des outils numériques.
+        </div>
+        <div class="example-card">
+          <strong style="color:#fca5a5;">Critères d'exclusion</strong><br>
+          Caractéristiques qui <strong>écartent</strong> un candidat : travailler dans le secteur du produit testé, avoir déjà participé à un test similaire récemment, ne pas correspondre au profil cible défini.
+        </div>
+      </div>
+
+      <div class="subsection-title">1.5 — Biais de sélection</div>
+      <div class="famille-tags"><span class="tag f5">Anti-biais</span></div>
+      <p>Le <strong>biais de sélection</strong> apparaît lorsque la méthode de recrutement favorise, sans intention, un certain type de profil — faussant ainsi la représentativité de l'échantillon par rapport à la cible réelle.</p>
+      <ul>
+        <li><strong>Biais de disponibilité</strong> : recruter uniquement parmi des proches ou collègues, plus faciles à mobiliser mais peu représentatifs</li>
+        <li><strong>Biais d'auto-sélection</strong> : seules les personnes très motivées (ou très mécontentes) répondent à un appel à participation</li>
+        <li><strong>Biais de familiarité</strong> : recruter des personnes déjà expertes du produit ou de produits similaires, qui ne réagiront pas comme un nouvel utilisateur</li>
+      </ul>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        Un échantillon biaisé peut produire des résultats <strong>cohérents en apparence</strong> mais non représentatifs : le danger est de prendre des décisions de conception sur la base de retours qui ne reflètent pas la cible réelle.
+      </div>
+    </div>
+  </div>
+
+  <!-- QCM 1 -->
+  <div class="panel" id="qcm1">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">📝</span>QCM 1 — Du protocole méthodologique au fil rouge</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-qcm1" style="width:0%"></div></div>
+      <div class="quiz-meta">
+        <span id="qcm1-counter">Question 1 / 6</span>
+        <span id="qcm1-status"></span>
+      </div>
+      <div id="qcm1-question"></div>
+      <div id="qcm1-options"></div>
+      <div id="qcm1-feedback" class="feedback-box"></div>
+      <div class="quiz-nav">
+        <button class="nav-btn ghost" id="qcm1-prev" onclick="navQuiz('qcm1',-1)">← Précédent</button>
+        <button class="nav-btn" id="qcm1-next" onclick="navQuiz('qcm1',1)" disabled>Suivant →</button>
+      </div>
+      <div id="qcm1-result" class="result-panel" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- CHAPITRE 2 -->
+  <div class="panel" id="chap2">
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">📋</span>Chapitre 2 — Taille d'échantillon et grille de recrutement</div>
+      <div class="objectif-box">
+        Comprendre la règle des 5 de Nielsen et ses limites, savoir quand un échantillon plus large est nécessaire, et construire une grille de recrutement opérationnelle permettant de trier des candidats.
+      </div>
+
+      <div class="subsection-title">2.1 — La règle des 5 de Nielsen</div>
+      <div class="famille-tags"><span class="tag f1">Fondamentaux</span></div>
+      <p>Pour un test qualitatif d'utilisabilité (modéré, think-aloud), la recherche menée par Jakob Nielsen indique qu'environ <strong>5 participants</strong> permettent déjà d'identifier la majorité des problèmes d'utilisabilité majeurs d'une interface. Au-delà, chaque participant supplémentaire a de plus en plus de chances de répéter des problèmes déjà observés.</p>
+
+      <div class="illustration">
+        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1200&q=80" alt="Personnes assises en cercle lors d'une réunion d'équipe">
+        <div class="illustration-caption">Au-delà d'un petit groupe de participants, chaque nouvelle session révèle de moins en moins de problèmes inédits</div>
+        <div class="illustration-credit">Photo : <a href="https://unsplash.com/@charlesdeluvio" target="_blank" rel="noopener">Charles Deluvio</a> sur <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></div>
+      </div>
+
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        La règle des 5 ne dit pas "5 participants suffisent toujours" : elle dit que <strong>pour un test qualitatif sur un seul profil utilisateur</strong>, 5 sessions suffisent généralement à atteindre un point de rendement décroissant.
+      </div>
+
+      <div class="subsection-title">2.2 — Limites de la règle des 5</div>
+      <div class="famille-tags"><span class="tag f2">Pièges courants</span></div>
+      <p>Cette règle ne s'applique pas dans tous les contextes. Plusieurs situations exigent un échantillon différent :</p>
+      <ul>
+        <li><strong>Plusieurs profils utilisateurs distincts</strong> : la règle des 5 s'applique <em>par profil</em> — tester 3 profils différents nécessite environ 5 participants par profil, soit 15 au total</li>
+        <li><strong>Tests quantitatifs</strong> : un sondage ou un test A/B nécessite un échantillon beaucoup plus large pour obtenir une significativité statistique (souvent plusieurs dizaines à centaines de répondants)</li>
+        <li><strong>A/B testing</strong> : repose sur la comparaison de deux versions à grande échelle, donc sur des volumes de trafic, pas sur des sessions individuelles</li>
+      </ul>
+
+      <div class="grid2">
+        <div class="example-card">
+          <strong style="color:#86efac;">Règle des 5 applicable</strong><br>
+          Test qualitatif modéré, think-aloud, un seul profil utilisateur ciblé : 5 participants suffisent généralement.
+        </div>
+        <div class="example-card" style="border-left-color:var(--danger);">
+          <strong style="color:#fca5a5;">Règle des 5 non applicable</strong><br>
+          Sondage quantitatif, A/B test, ou test couvrant plusieurs profils utilisateurs distincts : un échantillon plus large est nécessaire.
+        </div>
+      </div>
+
+      <div class="subsection-title">2.3 — Construire une grille de recrutement</div>
+      <div class="famille-tags"><span class="tag f3">Méthodologie</span></div>
+      <p>Une grille de recrutement (ou "screener") rassemble l'ensemble des critères définis au chapitre 1 sous une forme exploitable pour évaluer chaque candidat :</p>
+      <ul>
+        <li><strong>Critères socio-démographiques</strong> : âge, statut, lieu, niveau d'études si pertinent pour le produit</li>
+        <li><strong>Critères comportementaux</strong> : fréquence d'usage, type d'outils déjà utilisés, niveau d'expertise</li>
+        <li><strong>Critères d'exclusion</strong> : appartenance au secteur, participation récente à un test similaire</li>
+        <li><strong>Questions filtres</strong> : formulées de façon à ne pas révéler la "bonne" réponse attendue (éviter qu'un candidat motivé ne devine ce qu'il faut répondre pour être sélectionné)</li>
+      </ul>
+      <div class="example-card">
+        <strong style="color:#fcd34d;">Exemple de question filtre biaisée</strong><br>
+        <em>"Utilisez-vous une application de gestion de budget au moins une fois par semaine ?"</em><br>
+        → Révèle directement le critère recherché. Préférer une question plus large ("Quelles applications utilisez-vous pour gérer vos finances ?") puis appliquer le critère en interne.
+      </div>
+
+      <div class="subsection-title">2.4 — Trier des candidats : appliquer la grille</div>
+      <div class="famille-tags"><span class="tag f4">Application</span></div>
+      <p>Une fois la grille définie, le tri des candidats consiste à confronter chaque profil reçu aux critères d'inclusion et d'exclusion, dans l'ordre :</p>
+      <ul>
+        <li>Écarter d'abord les profils qui déclenchent un <strong>critère d'exclusion</strong> (même si le reste du profil semble intéressant)</li>
+        <li>Parmi les profils restants, vérifier la correspondance avec les <strong>critères d'inclusion</strong></li>
+        <li>En cas de profils équivalents, privilégier la <strong>diversité de l'échantillon</strong> (éviter que tous les participants se ressemblent sur des critères non contrôlés)</li>
+      </ul>
+
+      <div class="subsection-title">2.5 — Justifier les exclusions</div>
+      <div class="famille-tags"><span class="tag f5">Rigueur</span></div>
+      <p>Chaque candidat écarté doit pouvoir être justifié par un critère précis de la grille — et non par une impression générale. Documenter les exclusions permet de vérifier que le recrutement reste cohérent avec le protocole, et facilite les ajustements si l'échantillon final s'avère trop restreint.</p>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        Si trop de candidats sont exclus et que l'échantillon devient insuffisant, il vaut mieux <strong>ajuster les critères</strong> (en gardant leur logique) que d'inclure des profils hors cible "pour compléter".
+      </div>
+    </div>
+  </div>
+
+  <!-- QCM 2 -->
+  <div class="panel" id="qcm2">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">📝</span>QCM 2 — Taille d'échantillon et grille de recrutement</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-qcm2" style="width:0%"></div></div>
+      <div class="quiz-meta">
+        <span id="qcm2-counter">Question 1 / 6</span>
+        <span id="qcm2-status"></span>
+      </div>
+      <div id="qcm2-question"></div>
+      <div id="qcm2-options"></div>
+      <div id="qcm2-feedback" class="feedback-box"></div>
+      <div class="quiz-nav">
+        <button class="nav-btn ghost" id="qcm2-prev" onclick="navQuiz('qcm2',-1)">← Précédent</button>
+        <button class="nav-btn" id="qcm2-next" onclick="navQuiz('qcm2',1)" disabled>Suivant →</button>
+      </div>
+      <div id="qcm2-result" class="result-panel" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- GLOSSAIRE -->
+  <div class="panel" id="glossaire">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-amber">📖</span>Glossaire — 14 termes clés</div>
+      <div class="glossary-grid">
+        <div class="term-item"><div class="term-name">Fil rouge</div><div class="term-def">Produit fictif servant de support unique aux ateliers à partir de la séance 3, sur lequel la méthodologie est transposée.</div></div>
+        <div class="term-item"><div class="term-name">Transposition</div><div class="term-def">Adaptation d'un script ou d'un protocole construit sur un cas d'exemple à un nouveau contexte produit, en conservant la même méthodologie.</div></div>
+        <div class="term-item"><div class="term-name">Critère d'inclusion</div><div class="term-def">Caractéristique qu'un participant doit posséder pour être retenu dans l'échantillon (âge, statut, usage, niveau).</div></div>
+        <div class="term-item"><div class="term-name">Critère d'exclusion</div><div class="term-def">Caractéristique qui écarte un candidat du recrutement (secteur d'activité, participation récente, profil hors cible).</div></div>
+        <div class="term-item"><div class="term-name">Biais de sélection</div><div class="term-def">Distorsion de la représentativité d'un échantillon causée par la méthode de recrutement elle-même.</div></div>
+        <div class="term-item"><div class="term-name">Biais de disponibilité</div><div class="term-def">Biais de sélection consistant à recruter principalement des proches ou collègues, plus accessibles mais peu représentatifs.</div></div>
+        <div class="term-item"><div class="term-name">Biais d'auto-sélection</div><div class="term-def">Biais lié au fait que seules certaines personnes (très motivées ou très mécontentes) répondent spontanément à un appel à participation.</div></div>
+        <div class="term-item"><div class="term-name">Règle des 5 de Nielsen</div><div class="term-def">Constat empirique selon lequel environ 5 participants suffisent à identifier la majorité des problèmes d'utilisabilité majeurs pour un test qualitatif sur un seul profil.</div></div>
+        <div class="term-item"><div class="term-name">Profil utilisateur</div><div class="term-def">Ensemble de caractéristiques définissant un type d'utilisateur cible ; la règle des 5 s'applique par profil distinct.</div></div>
+        <div class="term-item"><div class="term-name">Significativité statistique</div><div class="term-def">Seuil de confiance nécessaire pour qu'un résultat quantitatif (sondage, A/B test) soit considéré comme fiable, nécessitant un échantillon large.</div></div>
+        <div class="term-item"><div class="term-name">Grille de recrutement (screener)</div><div class="term-def">Document regroupant les critères d'inclusion, d'exclusion et les questions filtres utilisés pour évaluer chaque candidat.</div></div>
+        <div class="term-item"><div class="term-name">Question filtre</div><div class="term-def">Question posée à un candidat lors du recrutement, formulée pour ne pas révéler la réponse attendue afin d'éviter qu'il ne s'adapte pour être sélectionné.</div></div>
+        <div class="term-item"><div class="term-name">Diversité de l'échantillon</div><div class="term-def">Variation des profils retenus sur des critères non contrôlés, recherchée en cas de candidats équivalents sur les critères principaux.</div></div>
+        <div class="term-item"><div class="term-name">Justification d'exclusion</div><div class="term-def">Motif précis, rattaché à un critère de la grille, expliquant pourquoi un candidat n'a pas été retenu pour le test.</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Protocole et Tests Utilisateurs — M1 UX/UI · Séance 3 · EEMI · 2025-2026</footer>
+
+<script>
+// Fisher-Yates shuffle
+function shuffleArray(array) {
+  const a = [...array];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// QCM 1 — Chapitre 1 : Du protocole méthodologique au fil rouge
+const qcm1Data = [
+  {
+    q: "Le passage du cas d'exemple au fil rouge implique principalement de :",
+    options: [
+      { text: "Réécrire entièrement la méthodologie apprise en séance 2", correct: false },
+      { text: "Transposer la même méthodologie à un nouveau contexte produit", correct: true },
+      { text: "Abandonner les hypothèses formulées sur le cas d'exemple sans les réutiliser", correct: false },
+      { text: "Attendre la séance 4 pour commencer à travailler sur le fil rouge", correct: false }
+    ],
+    explanation: "La méthode reste la même : seul le contexte produit change, et chaque bloc du script doit être adapté en conséquence."
+  },
+  {
+    q: "Lors de la transposition d'un script, les hypothèses doivent être vérifiées pour s'assurer qu'elles restent :",
+    options: [
+      { text: "Plus ambitieuses que celles du cas d'exemple", correct: false },
+      { text: "Spécifiques, observables et falsifiables dans le nouveau contexte", correct: true },
+      { text: "Identiques mot pour mot, sans aucune adaptation", correct: false },
+      { text: "Validées uniquement après le test", correct: false }
+    ],
+    explanation: "Une hypothèse transposée doit conserver les mêmes qualités qu'une hypothèse testable, appliquées au nouveau produit."
+  },
+  {
+    q: "Pourquoi un retour d'un participant hors cible n'apporte-t-il pas d'information exploitable ?",
+    options: [
+      { text: "Parce qu'il est toujours négatif", correct: false },
+      { text: "Parce que son comportement ne reflète pas celui des utilisateurs réellement visés", correct: true },
+      { text: "Parce qu'il prend plus de temps à répondre", correct: false },
+      { text: "Parce qu'il connaît déjà la solution attendue", correct: false }
+    ],
+    explanation: "Le recrutement conditionne la validité des observations : un profil hors cible ne permet pas de tirer de conclusions sur les utilisateurs visés."
+  },
+  {
+    q: "\"Avoir déjà participé à un test utilisateur similaire au cours des 6 derniers mois\" est typiquement un exemple de :",
+    options: [
+      { text: "Critère d'inclusion", correct: false },
+      { text: "Critère d'exclusion", correct: true },
+      { text: "Objectif de test", correct: false },
+      { text: "Question post-test", correct: false }
+    ],
+    explanation: "Ce critère écarte un candidat pour éviter un effet d'apprentissage ou de familiarité biaisant les résultats : c'est un critère d'exclusion."
+  },
+  {
+    q: "Le biais de disponibilité consiste à :",
+    options: [
+      { text: "Recruter uniquement parmi des proches ou collègues faciles à mobiliser", correct: true },
+      { text: "Recruter trop de participants par rapport au besoin", correct: false },
+      { text: "Définir des critères de recrutement trop stricts", correct: false },
+      { text: "Tester un produit non disponible publiquement", correct: false }
+    ],
+    explanation: "Le biais de disponibilité favorise des profils facilement accessibles, au détriment de la représentativité de l'échantillon."
+  },
+  {
+    q: "Un échantillon biaisé peut produire des résultats :",
+    options: [
+      { text: "Toujours incohérents et donc faciles à détecter", correct: false },
+      { text: "Cohérents en apparence mais non représentatifs de la cible réelle", correct: true },
+      { text: "Automatiquement invalidés par l'outil de test", correct: false },
+      { text: "Identiques à ceux d'un échantillon non biaisé", correct: false }
+    ],
+    explanation: "Le danger principal d'un biais de sélection est qu'il peut passer inaperçu : les résultats semblent exploitables mais ne reflètent pas la cible."
+  }
+];
+
+// QCM 2 — Chapitre 2 : Taille d'échantillon et grille de recrutement
+const qcm2Data = [
+  {
+    q: "La règle des 5 de Nielsen s'applique principalement à :",
+    options: [
+      { text: "Un sondage quantitatif à grande échelle", correct: false },
+      { text: "Un test qualitatif modéré sur un seul profil utilisateur", correct: true },
+      { text: "Un A/B test sur le trafic d'un site", correct: false },
+      { text: "Le recrutement de l'ensemble des participants, tous profils confondus", correct: false }
+    ],
+    explanation: "La règle des 5 concerne les tests qualitatifs modérés portant sur un profil utilisateur unique."
+  },
+  {
+    q: "Si un protocole prévoit de tester 3 profils utilisateurs distincts, la règle des 5 suggère environ :",
+    options: [
+      { text: "5 participants au total, tous profils confondus", correct: false },
+      { text: "5 participants par profil, soit environ 15 au total", correct: true },
+      { text: "15 participants uniquement pour le profil principal", correct: false },
+      { text: "Un nombre de participants proportionnel au budget disponible", correct: false }
+    ],
+    explanation: "La règle des 5 s'applique par profil : chaque profil distinct nécessite son propre petit groupe de participants."
+  },
+  {
+    q: "Un test A/B nécessite généralement un échantillon plus large qu'un test qualitatif car :",
+    options: [
+      { text: "Il dure plus longtemps par participant", correct: false },
+      { text: "Il repose sur une comparaison de volumes de trafic pour obtenir une significativité statistique", correct: true },
+      { text: "Il ne peut pas être réalisé à distance", correct: false },
+      { text: "Il ne concerne qu'un seul profil utilisateur", correct: false }
+    ],
+    explanation: "La significativité statistique d'un A/B test dépend du volume de données, ce qui implique un échantillon nettement plus large."
+  },
+  {
+    q: "Une grille de recrutement (screener) regroupe notamment :",
+    options: [
+      { text: "Les questions post-test du script", correct: false },
+      { text: "Les critères socio-démographiques, comportementaux et les questions filtres", correct: true },
+      { text: "Uniquement les coordonnées des participants", correct: false },
+      { text: "Le calcul des métriques UX du test", correct: false }
+    ],
+    explanation: "La grille de recrutement centralise tous les critères et questions permettant d'évaluer si un candidat correspond au profil recherché."
+  },
+  {
+    q: "Une question filtre mal formulée pose problème car elle risque de :",
+    options: [
+      { text: "Être trop courte pour être comprise", correct: false },
+      { text: "Révéler la réponse attendue et inciter le candidat à s'adapter pour être sélectionné", correct: true },
+      { text: "Ralentir le processus de recrutement", correct: false },
+      { text: "Remplacer les critères d'exclusion", correct: false }
+    ],
+    explanation: "Si la question filtre révèle ce qui est recherché, un candidat motivé peut répondre stratégiquement plutôt que sincèrement."
+  },
+  {
+    q: "Lors du tri de candidats, si l'échantillon final devient trop restreint après application des critères, il est préférable de :",
+    options: [
+      { text: "Inclure des profils hors cible pour atteindre le nombre souhaité", correct: false },
+      { text: "Ajuster les critères tout en conservant leur logique", correct: true },
+      { text: "Annuler le recrutement et reporter le test", correct: false },
+      { text: "Ignorer la règle des 5 et tester avec un seul participant", correct: false }
+    ],
+    explanation: "Plutôt que d'inclure des profils non pertinents, il vaut mieux ajuster les critères pour élargir le vivier tout en restant cohérent avec l'objectif du test."
+  }
+];
+
+// Anti-cheat : l'ordre des questions est conservé pour la progression pédagogique,
+// mais les options sont mélangées au rendu, et leur longueur varie volontairement
+// d'une question à l'autre — la bonne réponse n'est pas toujours la plus longue.
+const quizState = {
+  qcm1: { data: qcm1Data, current: 0, answers: new Array(qcm1Data.length).fill(null), shuffled: [] },
+  qcm2: { data: qcm2Data, current: 0, answers: new Array(qcm2Data.length).fill(null), shuffled: [] }
+};
+
+function initQuiz(quizId) {
+  const state = quizState[quizId];
+  state.shuffled = state.data.map(q => ({ ...q, options: shuffleArray(q.options) }));
+  renderQuestion(quizId);
+}
+
+function renderQuestion(quizId) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+  const idx = state.current;
+  const q = state.shuffled[idx];
+
+  document.getElementById(`${quizId}-counter`).textContent = `Question ${idx + 1} / ${total}`;
+  document.getElementById(`progress-${quizId}`).style.width = `${(idx / total) * 100}%`;
+
+  const qDiv = document.getElementById(`${quizId}-question`);
+  qDiv.innerHTML = `<div class="question-text">${q.q}</div>`;
+
+  const optDiv = document.getElementById(`${quizId}-options`);
+  optDiv.innerHTML = '';
+
+  const userAnswer = state.answers[idx];
+
+  q.options.forEach((opt, optIndex) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-option';
+    div.textContent = opt.text;
+
+    if (userAnswer !== null) {
+      div.classList.add('disabled');
+      if (optIndex === userAnswer) {
+        div.classList.add(opt.correct ? 'correct' : 'incorrect', 'selected');
+      } else if (opt.correct) {
+        div.classList.add('correct');
+      }
+    } else {
+      div.onclick = () => selectOption(quizId, optIndex);
+    }
+    optDiv.appendChild(div);
+  });
+
+  const feedbackDiv = document.getElementById(`${quizId}-feedback`);
+  feedbackDiv.className = 'feedback-box';
+  feedbackDiv.innerHTML = '';
+  if (userAnswer !== null) {
+    const wasCorrect = q.options[userAnswer].correct;
+    feedbackDiv.classList.add(wasCorrect ? 'correct' : 'incorrect');
+    feedbackDiv.innerHTML = `${wasCorrect ? '✓ Correct.' : '✗ Incorrect.'} ${q.explanation}`;
+  }
+
+  document.getElementById(`${quizId}-prev`).disabled = (idx === 0);
+  const nextBtn = document.getElementById(`${quizId}-next`);
+  nextBtn.disabled = (userAnswer === null);
+  nextBtn.textContent = (idx === total - 1) ? 'Voir le score →' : 'Suivant →';
+
+  document.getElementById(`${quizId}-result`).style.display = 'none';
+}
+
+function selectOption(quizId, optIndex) {
+  const state = quizState[quizId];
+  state.answers[state.current] = optIndex;
+  renderQuestion(quizId);
+}
+
+function navQuiz(quizId, direction) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+
+  if (direction === 1 && state.current === total - 1) {
+    showResult(quizId);
+    return;
+  }
+
+  state.current = Math.max(0, Math.min(total - 1, state.current + direction));
+  renderQuestion(quizId);
+}
+
+function showResult(quizId) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+  let score = 0;
+  state.shuffled.forEach((q, i) => {
+    const ans = state.answers[i];
+    if (ans !== null && q.options[ans].correct) score++;
+  });
+
+  document.getElementById(`progress-${quizId}`).style.width = '100%';
+
+  const resultDiv = document.getElementById(`${quizId}-result`);
+  resultDiv.style.display = 'block';
+  const percentage = Math.round((score / total) * 100);
+  resultDiv.innerHTML = `
+    <div class="score-badge">Score : ${score} / ${total} (${percentage}%)</div>
+    <div style="margin-top:0.8rem;">
+      <button class="nav-btn ghost" onclick="restartQuiz('${quizId}')">↻ Recommencer le QCM</button>
+    </div>
+  `;
+  resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function restartQuiz(quizId) {
+  const state = quizState[quizId];
+  state.current = 0;
+  state.answers = new Array(state.data.length).fill(null);
+  initQuiz(quizId);
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Init
+initQuiz('qcm1');
+initQuiz('qcm2');
+</script>
+
+</body>
+</html>

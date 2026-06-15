@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Séance 2 — Construire un protocole de test</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#3b82f6;
+  --secondary:#22c55e;
+  --accent:#f59e0b;
+  --danger:#ef4444;
+  --purple:#8b5cf6;
+  --bg:#0f172a;
+  --bg-soft:#1e293b;
+  --border:rgba(148,163,184,0.15);
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Sora',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+}
+code, .mono{font-family:'JetBrains Mono',monospace;}
+
+header.hero{
+  background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1e3a5f 100%);
+  padding:2.5rem 1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.badge{
+  display:inline-block;
+  background:rgba(59,130,246,0.15);
+  border:1px solid rgba(59,130,246,0.4);
+  color:#93c5fd;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.75rem;
+  padding:0.3rem 0.8rem;
+  border-radius:999px;
+  margin-bottom:1rem;
+  letter-spacing:0.05em;
+}
+h1{font-size:2rem;font-weight:800;margin:0 0 0.5rem;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.subtitle{color:var(--muted);margin:0 0 1.5rem;font-size:1rem;}
+.meta-pills{display:flex;flex-wrap:wrap;gap:0.6rem;}
+.pill{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:0.4rem 1rem;
+  font-size:0.85rem;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text);
+}
+.pill .label{color:var(--muted);margin-right:0.3rem;}
+
+main{max-width:1100px;margin:0 auto;padding:1.5rem;}
+
+.tabs{
+  display:flex;
+  gap:0.4rem;
+  overflow-x:auto;
+  padding-bottom:0.5rem;
+  margin-bottom:1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.tab{
+  flex:0 0 auto;
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  font-family:'Sora',sans-serif;
+  font-weight:600;
+  font-size:0.85rem;
+  padding:0.6rem 1.1rem;
+  border-radius:8px 8px 0 0;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.tab:hover{color:var(--text);background:rgba(148,163,184,0.08);}
+.tab.active{color:#fff;background:linear-gradient(135deg,var(--primary),var(--purple));}
+
+.panel{display:none;animation:fade .3s ease;}
+.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.card{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.5rem;
+  margin-bottom:1.2rem;
+}
+.section-title{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:1.15rem;font-weight:700;margin:0 0 1rem;
+  color:#fff;
+}
+.subsection-title{
+  font-size:1rem;font-weight:700;color:#60a5fa;margin:1.4rem 0 0.6rem;
+}
+.icon-bg{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.icon-blue{background:rgba(59,130,246,0.15);}
+.icon-green{background:rgba(34,197,94,0.15);}
+.icon-amber{background:rgba(245,158,11,0.15);}
+.icon-purple{background:rgba(139,92,246,0.15);}
+.icon-red{background:rgba(239,68,68,0.15);}
+
+ul{margin:0;padding-left:1.3rem;}
+ul li{margin-bottom:0.5rem;}
+
+.famille-tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.8rem;}
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;font-weight:700;
+  padding:0.2rem 0.6rem;border-radius:6px;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+.f1{background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);}
+.f2{background:rgba(34,197,94,0.15);color:#86efac;border:1px solid rgba(34,197,94,0.3);}
+.f3{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
+.f4{background:rgba(139,92,246,0.15);color:#c4b5fd;border:1px solid rgba(139,92,246,0.3);}
+.f5{background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
+
+.objectif-box{
+  background:rgba(59,130,246,0.08);
+  border-left:4px solid var(--primary);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-bottom:1rem;font-size:0.9rem;
+}
+.example-card{
+  background:rgba(15,23,42,0.6);
+  border-left:3px solid var(--purple);
+  padding:1rem 1.2rem;border-radius:0 8px 8px 0;
+  margin-top:0.8rem;font-size:0.88rem;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+@media (max-width:700px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+/* Cost curve */
+.cost-curve{display:flex;align-items:flex-end;gap:0.8rem;height:140px;margin:1rem 0;padding:0 0.5rem;}
+.cost-bar{flex:1;border-radius:8px 8px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;color:#0f172a;}
+.cost-bar-label{text-align:center;font-size:0.78rem;color:var(--muted);margin-top:0.4rem;}
+.cost-cols{display:flex;flex-direction:column;flex:1;}
+
+/* Progress bar */
+.progress-track{
+  height:8px;background:var(--bg);border-radius:999px;overflow:hidden;
+  border:1px solid var(--border);margin-bottom:1.5rem;
+}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .4s ease;}
+
+/* Quiz */
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-size:0.85rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.question-text{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:1.2rem;}
+.quiz-option{
+  background:rgba(30,41,59,0.4);
+  border:2px solid rgba(148,163,184,0.2);
+  transition:all 0.2s ease;
+  cursor:pointer;
+  padding:0.9rem 1.1rem;
+  border-radius:10px;
+  margin-bottom:0.7rem;
+  font-size:0.92rem;
+}
+.quiz-option:hover{background:rgba(30,41,59,0.7);border-color:rgba(96,165,250,0.5);}
+.quiz-option.selected{border-color:var(--primary);background:rgba(59,130,246,0.12);}
+.quiz-option.correct{border-color:var(--secondary);background:rgba(34,197,94,0.15);}
+.quiz-option.incorrect{border-color:var(--danger);background:rgba(239,68,68,0.15);}
+.quiz-option.disabled{cursor:default;}
+
+.feedback-box{
+  margin-top:1rem;padding:1rem 1.2rem;border-radius:0 8px 8px 0;font-size:0.9rem;display:none;
+}
+.feedback-box.correct{background:rgba(34,197,94,0.1);border-left:4px solid var(--secondary);display:block;}
+.feedback-box.incorrect{background:rgba(239,68,68,0.1);border-left:4px solid var(--danger);display:block;}
+
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;}
+.nav-btn{
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+  color:#fff;border:none;padding:0.65rem 1.4rem;border-radius:8px;
+  font-family:'Sora',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .2s;
+}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,0.3);}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.nav-btn.ghost{background:var(--bg-soft);border:1px solid var(--border);}
+
+.result-panel{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;margin-top:1rem;text-align:center;
+}
+.score-badge{
+  background:linear-gradient(135deg,#22c55e 0%,#10b981 100%);
+  color:white;padding:0.5rem 1.2rem;border-radius:9999px;font-weight:700;
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:1.1rem;margin-bottom:0.8rem;
+}
+
+/* Glossaire */
+.glossary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media (max-width:700px){.glossary-grid{grid-template-columns:1fr;}}
+
+.illustration{margin:1.2rem 0;text-align:center;background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.illustration svg{max-width:100%;height:auto;max-height:260px;}
+.illustration img{max-width:100%;height:auto;max-height:320px;border-radius:8px;display:block;margin:0 auto;object-fit:cover;}
+.illustration-caption{font-size:0.8rem;color:var(--muted);margin-top:0.6rem;font-style:italic;}
+.illustration-credit{font-size:0.7rem;color:var(--muted);margin-top:0.2rem;}
+.illustration-credit a{color:var(--muted);text-decoration:none;}
+.illustration-credit a:hover{color:var(--primary);text-decoration:underline;}
+.term-item{
+  background:#0f172a;border:1px solid var(--border);border-radius:10px;
+  padding:1rem 1.1rem;
+}
+.term-name{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;margin-bottom:0.4rem;font-size:0.95rem;}
+.term-def{font-size:0.88rem;color:var(--text);}
+
+footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;border-top:1px solid var(--border);margin-top:2rem;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">M1 UX/UI · SÉANCE 2 · PARTIE THÉORIQUE</span>
+    <h1>Construire un protocole de test</h1>
+    <p class="subtitle">Support de cours interactif — Protocole et Tests Utilisateurs</p>
+    <div class="meta-pills">
+      <span class="pill"><span class="label">Module</span>Protocole et Tests Utilisateurs</span>
+      <span class="pill"><span class="label">Chapitres</span>2</span>
+      <span class="pill"><span class="label">QCM</span>2 × 6 questions</span>
+      <span class="pill"><span class="label">Glossaire</span>14 termes</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="chap1">Chapitre 1</button>
+    <button class="tab" data-tab="qcm1">QCM 1</button>
+    <button class="tab" data-tab="chap2">Chapitre 2</button>
+    <button class="tab" data-tab="qcm2">QCM 2</button>
+    <button class="tab" data-tab="glossaire">Glossaire</button>
+  </div>
+
+  <!-- CHAPITRE 1 -->
+  <div class="panel active" id="chap1">
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">🎯</span>Chapitre 1 — Objectifs et hypothèses</div>
+      <div class="objectif-box">
+        Apprendre à transformer un besoin business en objectif de test précis, à formuler des hypothèses réellement testables, et à délimiter le périmètre d'un test avant de rédiger le moindre scénario de tâche.
+      </div>
+
+      <div class="subsection-title">1.1 — Du besoin business à l'objectif de test</div>
+      <div class="famille-tags"><span class="tag f1">Fondamentaux</span></div>
+      <p>Un projet ne part jamais d'un protocole de test : il part d'un <strong>besoin business</strong> ("augmenter le taux de conversion", "réduire les appels au support", "améliorer la satisfaction sur l'application mobile"). Ce besoin est trop large pour être testé directement — il doit être traduit en un <strong>objectif de test</strong> : une question précise, centrée sur l'usage, à laquelle un test peut répondre.</p>
+
+      <div class="illustration">
+        <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=80" alt="Personne travaillant sur des feuilles de planification bleues et blanches">
+        <div class="illustration-caption">Du besoin business à la tâche de test : une chaîne de traductions successives, étape par étape</div>
+        <div class="illustration-credit">Photo : <a href="https://unsplash.com/@alvarordesign" target="_blank" rel="noopener">Alvaro Reyes</a> sur <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></div>
+      </div>
+
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">Exemple</strong><br>
+        Besoin business : <em>"Augmenter le taux de conversion sur le tunnel d'achat."</em><br>
+        Objectif de test : <em>"Identifier les points de friction rencontrés par les utilisateurs entre l'ajout au panier et la validation de commande."</em><br>
+        → L'objectif de test reste centré sur l'usage, pas sur le chiffre business lui-même.
+      </div>
+
+      <div class="subsection-title">1.2 — Formuler des hypothèses testables</div>
+      <div class="famille-tags"><span class="tag f2">Méthodologie</span></div>
+      <p>Une hypothèse de conception (vue en séance 1) ne devient utile pour un protocole que si elle est <strong>testable</strong> : elle doit être suffisamment précise pour qu'une observation puisse la confirmer ou l'infirmer. Trois critères permettent de le vérifier :</p>
+      <ul>
+        <li><strong>Spécifique</strong> : elle porte sur un élément ou un comportement précis, pas sur "l'expérience" en général</li>
+        <li><strong>Observable</strong> : on peut la confronter à un comportement ou une déclaration concrète pendant le test</li>
+        <li><strong>Falsifiable</strong> : il doit être possible qu'elle soit fausse — une hypothèse qui ne peut jamais être contredite n'apprend rien</li>
+      </ul>
+
+      <div class="grid2">
+        <div class="example-card" style="border-left-color:var(--danger);">
+          <strong style="color:#fca5a5;">✗ Hypothèse non testable</strong><br>
+          <em>"Le design est intuitif."</em><br>
+          Trop vague : aucune observation précise ne permet de la confirmer ou de l'infirmer.
+        </div>
+        <div class="example-card">
+          <strong style="color:#86efac;">✓ Hypothèse testable</strong><br>
+          <em>"Les utilisateurs trouveront la barre de recherche en moins de 10 secondes sans aide."</em><br>
+          Spécifique, observable (temps mesurable), falsifiable (peut ne pas se produire).
+        </div>
+      </div>
+
+      <div class="subsection-title">1.3 — Questions de recherche vs objectifs de test</div>
+      <div class="famille-tags"><span class="tag f3">Distinction clé</span></div>
+      <p>Une <strong>question de recherche</strong> est ouverte et exploratoire : "Comment les utilisateurs s'orientent-ils sur la page d'accueil ?". Un <strong>objectif de test</strong> est plus resserré et orienté vers une décision : "Vérifier si les utilisateurs identifient le bouton d'action principale en moins de 5 secondes".</p>
+      <p>Les deux ne s'opposent pas : une question de recherche peut donner naissance à plusieurs objectifs de test précis. Mais confondre les deux conduit souvent à des protocoles trop larges, où l'on observe "tout" sans pouvoir conclure sur rien de précis.</p>
+
+      <div class="subsection-title">1.4 — Définir le périmètre du test</div>
+      <div class="famille-tags"><span class="tag f4">Cadrage</span></div>
+      <p>Le périmètre définit ce qui sera testé — et tout aussi important, ce qui ne le sera pas. Un test sans périmètre clair tend à s'étendre : on ajoute des tâches "pendant qu'on y est", la session s'allonge, et les résultats deviennent difficiles à interpréter car ils mélangent plusieurs parcours différents.</p>
+      <div class="grid2">
+        <div class="example-card">
+          <strong style="color:#93c5fd;">Dans le périmètre</strong><br>
+          Le parcours précis concerné par l'objectif de test (ex : ajout au panier → paiement), avec ses écrans et interactions clés.
+        </div>
+        <div class="example-card">
+          <strong style="color:#fcd34d;">Hors périmètre</strong><br>
+          Les fonctionnalités annexes, même intéressantes, qui ne répondent pas directement à l'objectif fixé (ex : création de compte, programme de fidélité).
+        </div>
+      </div>
+
+      <div class="subsection-title">1.5 — Les KPI de succès d'un test</div>
+      <div class="famille-tags"><span class="tag f5">Critères de réussite</span></div>
+      <p>Définir à l'avance ce qui constituera un résultat "positif" ou "négatif" évite d'interpréter les données après coup selon ce qu'on souhaite y voir. Ces critères peuvent prendre la forme de seuils indicatifs :</p>
+      <ul>
+        <li>Un taux de réussite cible sur une tâche (ex : "au moins 4 participants sur 5 complètent la tâche sans aide")</li>
+        <li>Un temps maximal acceptable sur une tâche</li>
+        <li>Un score minimal au questionnaire de satisfaction (ex : SUS)</li>
+      </ul>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        Ces seuils sont définis <strong>avant</strong> le test, pas après avoir vu les résultats — sinon ils ne servent plus à évaluer, mais à justifier une conclusion déjà décidée.
+      </div>
+
+      <div class="subsection-title">1.6 — Erreurs fréquentes dans la formulation des hypothèses</div>
+      <div class="famille-tags"><span class="tag f1">Pièges courants</span></div>
+      <div class="grid2">
+        <div class="example-card" style="border-left-color:var(--danger);">
+          <strong style="color:#fca5a5;">L'hypothèse-solution</strong><br>
+          <em>"Il faut ajouter un bouton flottant pour que les utilisateurs trouvent le panier."</em><br>
+          Ceci décrit déjà une solution, pas une hypothèse à tester sur l'existant.
+        </div>
+        <div class="example-card" style="border-left-color:var(--danger);">
+          <strong style="color:#fca5a5;">L'hypothèse de confirmation</strong><br>
+          <em>"Les utilisateurs vont adorer cette nouvelle fonctionnalité."</em><br>
+          Formulée pour être confirmée, elle oriente déjà l'interprétation des résultats avant même le test.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QCM 1 -->
+  <div class="panel" id="qcm1">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">📝</span>QCM 1 — Objectifs et hypothèses</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-qcm1" style="width:0%"></div></div>
+      <div class="quiz-meta">
+        <span id="qcm1-counter">Question 1 / 6</span>
+        <span id="qcm1-status"></span>
+      </div>
+      <div id="qcm1-question"></div>
+      <div id="qcm1-options"></div>
+      <div id="qcm1-feedback" class="feedback-box"></div>
+      <div class="quiz-nav">
+        <button class="nav-btn ghost" id="qcm1-prev" onclick="navQuiz('qcm1',-1)">← Précédent</button>
+        <button class="nav-btn" id="qcm1-next" onclick="navQuiz('qcm1',1)" disabled>Suivant →</button>
+      </div>
+      <div id="qcm1-result" class="result-panel" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- CHAPITRE 2 -->
+  <div class="panel" id="chap2">
+
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">📋</span>Chapitre 2 — Scénarios de tâches et structure du script</div>
+      <div class="objectif-box">
+        Savoir rédiger des tâches de test claires et non biaisées, les organiser dans un ordre cohérent, choisir les bonnes questions pré et post-test, et structurer l'ensemble dans un script utilisable par un animateur.
+      </div>
+
+      <div class="subsection-title">2.1 — Qu'est-ce qu'une tâche de test ?</div>
+      <div class="famille-tags"><span class="tag f1">Fondamentaux</span></div>
+      <p>Une tâche de test traduit un objectif en une <strong>action concrète</strong> que le participant doit accomplir, formulée comme un but à atteindre plutôt que comme une procédure à suivre. Une bonne tâche présente trois caractéristiques :</p>
+      <ul>
+        <li><strong>Un but clair</strong> : le participant sait ce qu'il doit accomplir, sans ambiguïté sur la "fin" de la tâche</li>
+        <li><strong>Un contexte réaliste</strong> : la tâche s'inscrit dans un scénario d'usage plausible, pas dans une instruction abstraite</li>
+        <li><strong>Aucune révélation de la solution</strong> : la formulation ne doit pas indiquer où cliquer ni quel élément utiliser</li>
+      </ul>
+      <div class="grid2">
+        <div class="example-card" style="border-left-color:var(--danger);">
+          <strong style="color:#fca5a5;">✗ Procédure</strong><br>
+          <em>"Cliquez sur l'icône en forme de loupe en haut à droite, puis tapez 'chaussures' et validez."</em><br>
+          Décrit déjà la solution : impossible d'observer si le participant la trouve seul.
+        </div>
+        <div class="example-card">
+          <strong style="color:#86efac;">✓ Tâche orientée but</strong><br>
+          <em>"Vous cherchez une paire de chaussures de sport sur le site. Montrez-moi comment vous procéderiez."</em><br>
+          Laisse le participant choisir son propre chemin.
+        </div>
+      </div>
+
+      <div class="subsection-title">2.2 — Formulation neutre vs orientée</div>
+      <div class="famille-tags"><span class="tag f2">Anti-biais</span></div>
+      <p>La formulation d'une tâche peut, sans intention, orienter le comportement du participant : suggérer que l'action est "facile", utiliser le vocabulaire interne de l'équipe, ou présupposer un jugement positif sur l'interface.</p>
+
+      <div class="illustration">
+        <img src="https://images.unsplash.com/photo-1587440871875-191322ee64b0?auto=format&fit=crop&w=1200&q=80" alt="Personne écrivant à la main sur une feuille de papier">
+        <div class="illustration-caption">Rédiger une consigne de test demande de relire chaque mot : "facilement" présuppose déjà un résultat</div>
+        <div class="illustration-credit">Photo : <a href="https://unsplash.com/@uxindo" target="_blank" rel="noopener">UX Indonesia</a> sur <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></div>
+      </div>
+
+      <p>D'autres formes de biais de formulation sont à surveiller : le vocabulaire technique ("accédez au menu de configuration") que le participant ne connaît pas forcément, ou les questions qui orientent vers une réponse attendue ("vous trouvez ça pratique, non ?").</p>
+
+      <div class="subsection-title">2.3 — Ordonner les tâches</div>
+      <div class="famille-tags"><span class="tag f3">Structuration</span></div>
+      <p>L'ordre des tâches influence la qualité des observations :</p>
+      <ul>
+        <li><strong>Progression logique</strong> : commencer par une tâche simple et familière permet au participant de se mettre à l'aise avant d'aborder des tâches plus complexes</li>
+        <li><strong>Effet de fatigue</strong> : au-delà d'un certain nombre de tâches, l'attention et la motivation du participant diminuent — les dernières tâches d'une longue session sont souvent moins fiables</li>
+        <li><strong>Indépendance des tâches</strong> : dans la mesure du possible, l'échec d'une tâche ne doit pas empêcher de réaliser la suivante (prévoir des points de reprise)</li>
+      </ul>
+
+      <div class="subsection-title">2.4 — Questions pré-test et post-test</div>
+      <div class="famille-tags"><span class="tag f4">Avant / après</span></div>
+      <div class="grid2">
+        <div class="example-card">
+          <strong style="color:#93c5fd;">Questions pré-test</strong>
+          <ul style="margin-top:0.5rem;">
+            <li>Mise à l'aise du participant (questions de contexte, jamais évaluatives)</li>
+            <li>Vérification rapide du profil (cohérence avec le recrutement)</li>
+            <li>Familiarité avec le type de produit testé</li>
+          </ul>
+        </div>
+        <div class="example-card">
+          <strong style="color:#86efac;">Questions post-test</strong>
+          <ul style="margin-top:0.5rem;">
+            <li>Ressenti général sur l'expérience</li>
+            <li>Questionnaire de satisfaction standardisé (ex : SUS)</li>
+            <li>Question ouverte de clôture ("y a-t-il autre chose que vous souhaitez ajouter ?")</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subsection-title">2.5 — Structure type d'un script de test</div>
+      <div class="famille-tags"><span class="tag f5">Synthèse</span></div>
+      <p>Un script de test rassemble l'ensemble des éléments précédents dans un déroulé unique, destiné à être suivi par l'animateur :</p>
+
+      <div class="illustration">
+        <img src="https://images.unsplash.com/photo-1587355760421-b9de3226a046?auto=format&fit=crop&w=1200&q=80" alt="Personne organisant la structure d'un document de conception sur ordinateur portable">
+        <div class="illustration-caption">Structurer un script de test, c'est organiser cinq blocs : introduction, questions pré-test, tâches, questions post-test, débrief</div>
+        <div class="illustration-credit">Photo : <a href="https://unsplash.com/@uxindo" target="_blank" rel="noopener">UX Indonesia</a> sur <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></div>
+      </div>
+
+      <div class="subsection-title">2.6 — De l'écrit à l'oral : consignes pour l'animateur</div>
+      <div class="famille-tags"><span class="tag f1">Passage à l'oral</span></div>
+      <p>Le script écrit sert de référence, mais il n'est pas destiné à être lu mot pour mot : un animateur qui récite un texte rigide met le participant mal à l'aise et perd en naturel. Le script gagne à inclure, en plus des formulations exactes des tâches, des <strong>notes pour l'animateur</strong> : ce qu'il faut observer en priorité, à quel moment relancer, et les limites à ne pas franchir (aide vs neutralité, abordée plus en détail en séance 4).</p>
+      <div class="example-card">
+        <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
+        Un bon script de test sépare clairement ce qui doit être dit <strong>mot pour mot</strong> au participant (consignes de tâches, questions standardisées) de ce qui relève de <strong>notes internes</strong> pour l'animateur (points d'attention, relances possibles).
+      </div>
+    </div>
+  </div>
+
+  <!-- QCM 2 -->
+  <div class="panel" id="qcm2">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-green">📝</span>QCM 2 — Scénarios de tâches et structure du script</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-qcm2" style="width:0%"></div></div>
+      <div class="quiz-meta">
+        <span id="qcm2-counter">Question 1 / 6</span>
+        <span id="qcm2-status"></span>
+      </div>
+      <div id="qcm2-question"></div>
+      <div id="qcm2-options"></div>
+      <div id="qcm2-feedback" class="feedback-box"></div>
+      <div class="quiz-nav">
+        <button class="nav-btn ghost" id="qcm2-prev" onclick="navQuiz('qcm2',-1)">← Précédent</button>
+        <button class="nav-btn" id="qcm2-next" onclick="navQuiz('qcm2',1)" disabled>Suivant →</button>
+      </div>
+      <div id="qcm2-result" class="result-panel" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- GLOSSAIRE -->
+  <div class="panel" id="glossaire">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-amber">📖</span>Glossaire — 14 termes clés</div>
+      <div class="glossary-grid">
+        <div class="term-item"><div class="term-name">Besoin business</div><div class="term-def">Objectif de niveau organisationnel (conversion, satisfaction, support) à l'origine d'un projet, trop large pour être testé directement.</div></div>
+        <div class="term-item"><div class="term-name">Objectif de test</div><div class="term-def">Question précise centrée sur l'usage, formulée à partir d'un besoin business, à laquelle un test peut répondre.</div></div>
+        <div class="term-item"><div class="term-name">Hypothèse testable</div><div class="term-def">Affirmation spécifique, observable et falsifiable sur un comportement attendu, pouvant être confirmée ou infirmée par un test.</div></div>
+        <div class="term-item"><div class="term-name">Hypothèse-solution</div><div class="term-def">Erreur de formulation consistant à proposer directement une solution au lieu d'énoncer une hypothèse vérifiable sur l'existant.</div></div>
+        <div class="term-item"><div class="term-name">Question de recherche</div><div class="term-def">Question ouverte et exploratoire visant à comprendre un usage, plus large qu'un objectif de test précis.</div></div>
+        <div class="term-item"><div class="term-name">Périmètre de test</div><div class="term-def">Délimitation de ce qui sera testé (parcours, écrans, interactions) et de ce qui en est exclu.</div></div>
+        <div class="term-item"><div class="term-name">KPI de succès du test</div><div class="term-def">Seuil défini à l'avance (taux de réussite, temps, score) permettant d'évaluer objectivement le résultat d'un test.</div></div>
+        <div class="term-item"><div class="term-name">Tâche de test</div><div class="term-def">Action concrète formulée comme un but à atteindre par le participant, sans révéler la solution attendue.</div></div>
+        <div class="term-item"><div class="term-name">Formulation neutre</div><div class="term-def">Rédaction d'une consigne ou d'une question qui n'oriente pas le comportement ou la réponse du participant.</div></div>
+        <div class="term-item"><div class="term-name">Effet de fatigue</div><div class="term-def">Diminution de l'attention et de la motivation du participant au fil d'une session de test trop longue.</div></div>
+        <div class="term-item"><div class="term-name">Question pré-test</div><div class="term-def">Question posée avant les tâches : mise à l'aise, vérification du profil, contexte d'usage du participant.</div></div>
+        <div class="term-item"><div class="term-name">Question post-test</div><div class="term-def">Question posée après les tâches : ressenti général, satisfaction (ex : SUS), retour ouvert.</div></div>
+        <div class="term-item"><div class="term-name">Script de test</div><div class="term-def">Document structurant l'ensemble du déroulé d'un test : introduction, questions pré-test, tâches, questions post-test, débrief.</div></div>
+        <div class="term-item"><div class="term-name">Note pour l'animateur</div><div class="term-def">Indication interne au script (points d'attention, relances possibles) distincte des formulations à dire au participant.</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Protocole et Tests Utilisateurs — M1 UX/UI · Séance 1 · EEMI · 2025-2026</footer>
+
+<script>
+// Fisher-Yates shuffle
+function shuffleArray(array) {
+  const a = [...array];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// QCM 1 — Chapitre 1 : Objectifs et hypothèses
+const qcm1Data = [
+  {
+    q: "Un \"objectif de test\" se distingue d'un \"besoin business\" car il est :",
+    options: [
+      { text: "Plus large, pour couvrir tous les aspects possibles du produit", correct: false },
+      { text: "Centré sur l'usage et formulé sous forme de question testable", correct: true },
+      { text: "Exprimé uniquement en termes financiers", correct: false },
+      { text: "Défini après l'analyse des résultats du test", correct: false }
+    ],
+    explanation: "L'objectif de test traduit le besoin business en une question précise sur l'usage, à laquelle un test peut répondre."
+  },
+  {
+    q: "Pour qu'une hypothèse soit testable, elle doit notamment être :",
+    options: [
+      { text: "Falsifiable : il doit être possible qu'elle s'avère fausse", correct: true },
+      { text: "Formulée par la direction générale du projet", correct: false },
+      { text: "Rédigée après avoir observé les premiers résultats", correct: false },
+      { text: "Applicable à l'ensemble des fonctionnalités du produit", correct: false }
+    ],
+    explanation: "Une hypothèse qui ne peut jamais être contredite par l'observation n'apporte aucune information exploitable."
+  },
+  {
+    q: "\"Comment les utilisateurs s'orientent-ils sur la page d'accueil ?\" est un exemple de :",
+    options: [
+      { text: "KPI de succès du test", correct: false },
+      { text: "Question de recherche", correct: true },
+      { text: "Hypothèse-solution", correct: false },
+      { text: "Critère d'exclusion du recrutement", correct: false }
+    ],
+    explanation: "Une question de recherche est ouverte et exploratoire ; elle peut donner naissance à plusieurs objectifs de test plus précis."
+  },
+  {
+    q: "Définir le périmètre d'un test sert avant tout à :",
+    options: [
+      { text: "Réduire le nombre de participants nécessaires", correct: false },
+      { text: "Délimiter ce qui sera testé pour obtenir des résultats interprétables", correct: true },
+      { text: "Garantir que le test ne dépassera pas une heure", correct: false },
+      { text: "Remplacer la rédaction des hypothèses", correct: false }
+    ],
+    explanation: "Un périmètre clair évite de mélanger plusieurs parcours différents, ce qui rendrait les résultats difficiles à interpréter."
+  },
+  {
+    q: "Les seuils de réussite (KPI de test) doivent être définis :",
+    options: [
+      { text: "Après avoir observé les résultats, pour rester réalistes", correct: false },
+      { text: "Uniquement si le test est quantitatif", correct: false },
+      { text: "Avant le test, pour évaluer objectivement le résultat", correct: true },
+      { text: "Par les participants eux-mêmes en fin de session", correct: false }
+    ],
+    explanation: "Définis après coup, ces seuils risquent de justifier une conclusion déjà décidée plutôt que de l'évaluer objectivement."
+  },
+  {
+    q: "\"Il faut ajouter un bouton flottant pour que les utilisateurs trouvent le panier\" est un exemple de :",
+    options: [
+      { text: "Hypothèse testable bien formulée", correct: false },
+      { text: "Objectif de test", correct: false },
+      { text: "Hypothèse-solution", correct: true },
+      { text: "Question de recherche", correct: false }
+    ],
+    explanation: "Cette phrase propose déjà une solution au lieu de formuler une hypothèse vérifiable sur l'interface existante."
+  }
+];
+
+// QCM 2 — Chapitre 2 : Scénarios de tâches et structure du script
+const qcm2Data = [
+  {
+    q: "Une tâche de test bien formulée doit avant tout :",
+    options: [
+      { text: "Décrire précisément la procédure à suivre étape par étape", correct: false },
+      { text: "Formuler un but à atteindre, sans révéler la solution", correct: true },
+      { text: "Utiliser le vocabulaire technique de l'équipe de conception", correct: false },
+      { text: "Préciser à l'avance le temps que le participant doit y consacrer", correct: false }
+    ],
+    explanation: "Une tâche orientée but laisse le participant choisir son propre chemin, ce qui permet d'observer son comportement réel."
+  },
+  {
+    q: "La consigne \"Essayez de trouver facilement le bouton de paramètres\" pose problème car :",
+    options: [
+      { text: "Elle est trop courte pour être comprise", correct: false },
+      { text: "Le mot \"facilement\" présuppose un résultat avant même le test", correct: true },
+      { text: "Elle ne mentionne aucun élément d'interface", correct: false },
+      { text: "Elle est trop longue pour un test non-modéré", correct: false }
+    ],
+    explanation: "Suggérer qu'une action devrait être facile oriente la perception du participant et biaise son comportement ou ses réponses."
+  },
+  {
+    q: "Concernant l'ordre des tâches dans un script de test, il est recommandé de :",
+    options: [
+      { text: "Toujours commencer par la tâche la plus complexe", correct: false },
+      { text: "Placer les tâches dans un ordre aléatoire à chaque session", correct: false },
+      { text: "Commencer par une tâche simple pour mettre le participant à l'aise", correct: true },
+      { text: "Regrouper toutes les questions avant les tâches", correct: false }
+    ],
+    explanation: "Une progression du simple vers le complexe aide le participant à se familiariser avec l'exercice avant d'aborder des tâches plus exigeantes."
+  },
+  {
+    q: "Les questions pré-test servent principalement à :",
+    options: [
+      { text: "Évaluer la satisfaction finale du participant", correct: false },
+      { text: "Mettre le participant à l'aise et vérifier la cohérence de son profil", correct: true },
+      { text: "Remplacer le questionnaire de recrutement", correct: false },
+      { text: "Mesurer le temps que prendra chaque tâche", correct: false }
+    ],
+    explanation: "Les questions pré-test installent un climat de confiance et confirment que le profil correspond bien à la cible recherchée."
+  },
+  {
+    q: "Dans la structure type d'un script de test, l'étape \"Débrief & remerciement\" intervient :",
+    options: [
+      { text: "Avant l'introduction, pour préparer le participant", correct: false },
+      { text: "Entre deux tâches, pour faire une pause", correct: false },
+      { text: "Après les questions post-test, en clôture de la session", correct: true },
+      { text: "Uniquement si le test est non-modéré", correct: false }
+    ],
+    explanation: "Le débrief et le remerciement constituent la dernière étape du script, après l'ensemble des tâches et des questions post-test."
+  },
+  {
+    q: "Dans un script de test, les \"notes pour l'animateur\" se distinguent des consignes destinées au participant car elles :",
+    options: [
+      { text: "Doivent être lues à voix haute en début de session", correct: false },
+      { text: "Remplacent entièrement les formulations de tâches", correct: false },
+      { text: "Sont des indications internes (points d'attention, relances) non communiquées au participant", correct: true },
+      { text: "Servent uniquement pour les tests non-modérés", correct: false }
+    ],
+    explanation: "Le script sépare ce qui doit être dit mot pour mot au participant des repères internes destinés à guider l'animateur."
+  }
+];
+
+// Anti-cheat : l'ordre des questions est conservé pour la progression pédagogique,
+// mais les options sont mélangées au rendu, et leur longueur varie volontairement
+// d'une question à l'autre — la bonne réponse n'est pas toujours la plus longue.
+const quizState = {
+  qcm1: { data: qcm1Data, current: 0, answers: new Array(qcm1Data.length).fill(null), shuffled: [] },
+  qcm2: { data: qcm2Data, current: 0, answers: new Array(qcm2Data.length).fill(null), shuffled: [] }
+};
+
+function initQuiz(quizId) {
+  const state = quizState[quizId];
+  state.shuffled = state.data.map(q => ({ ...q, options: shuffleArray(q.options) }));
+  renderQuestion(quizId);
+}
+
+function renderQuestion(quizId) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+  const idx = state.current;
+  const q = state.shuffled[idx];
+
+  document.getElementById(`${quizId}-counter`).textContent = `Question ${idx + 1} / ${total}`;
+  document.getElementById(`progress-${quizId}`).style.width = `${(idx / total) * 100}%`;
+
+  const qDiv = document.getElementById(`${quizId}-question`);
+  qDiv.innerHTML = `<div class="question-text">${q.q}</div>`;
+
+  const optDiv = document.getElementById(`${quizId}-options`);
+  optDiv.innerHTML = '';
+
+  const userAnswer = state.answers[idx];
+
+  q.options.forEach((opt, optIndex) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-option';
+    div.textContent = opt.text;
+
+    if (userAnswer !== null) {
+      div.classList.add('disabled');
+      if (optIndex === userAnswer) {
+        div.classList.add(opt.correct ? 'correct' : 'incorrect', 'selected');
+      } else if (opt.correct) {
+        div.classList.add('correct');
+      }
+    } else {
+      div.onclick = () => selectOption(quizId, optIndex);
+    }
+    optDiv.appendChild(div);
+  });
+
+  const feedbackDiv = document.getElementById(`${quizId}-feedback`);
+  feedbackDiv.className = 'feedback-box';
+  feedbackDiv.innerHTML = '';
+  if (userAnswer !== null) {
+    const wasCorrect = q.options[userAnswer].correct;
+    feedbackDiv.classList.add(wasCorrect ? 'correct' : 'incorrect');
+    feedbackDiv.innerHTML = `${wasCorrect ? '✓ Correct.' : '✗ Incorrect.'} ${q.explanation}`;
+  }
+
+  document.getElementById(`${quizId}-prev`).disabled = (idx === 0);
+  const nextBtn = document.getElementById(`${quizId}-next`);
+  nextBtn.disabled = (userAnswer === null);
+  nextBtn.textContent = (idx === total - 1) ? 'Voir le score →' : 'Suivant →';
+
+  document.getElementById(`${quizId}-result`).style.display = 'none';
+}
+
+function selectOption(quizId, optIndex) {
+  const state = quizState[quizId];
+  state.answers[state.current] = optIndex;
+  renderQuestion(quizId);
+}
+
+function navQuiz(quizId, direction) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+
+  if (direction === 1 && state.current === total - 1) {
+    showResult(quizId);
+    return;
+  }
+
+  state.current = Math.max(0, Math.min(total - 1, state.current + direction));
+  renderQuestion(quizId);
+}
+
+function showResult(quizId) {
+  const state = quizState[quizId];
+  const total = state.data.length;
+  let score = 0;
+  state.shuffled.forEach((q, i) => {
+    const ans = state.answers[i];
+    if (ans !== null && q.options[ans].correct) score++;
+  });
+
+  document.getElementById(`progress-${quizId}`).style.width = '100%';
+
+  const resultDiv = document.getElementById(`${quizId}-result`);
+  resultDiv.style.display = 'block';
+  const percentage = Math.round((score / total) * 100);
+  resultDiv.innerHTML = `
+    <div class="score-badge">Score : ${score} / ${total} (${percentage}%)</div>
+    <div style="margin-top:0.8rem;">
+      <button class="nav-btn ghost" onclick="restartQuiz('${quizId}')">↻ Recommencer le QCM</button>
+    </div>
+  `;
+  resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function restartQuiz(quizId) {
+  const state = quizState[quizId];
+  state.current = 0;
+  state.answers = new Array(state.data.length).fill(null);
+  initQuiz(quizId);
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Init
+initQuiz('qcm1');
+initQuiz('qcm2');
+</script>
+
+</body>
+</html>
