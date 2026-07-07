@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Révision S1 &amp; S2 — Protocoles et tests utilisateurs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+:root{--primary:#3b82f6;--secondary:#22c55e;--accent:#f59e0b;--danger:#ef4444;--purple:#8b5cf6;--bg:#0f172a;--bg-soft:#1e293b;--border:rgba(148,163,184,0.15);--text:#e2e8f0;--muted:#94a3b8;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+header.hero{background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1e3a5f 100%);padding:2.5rem 1.5rem;border-bottom:1px solid var(--border);}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.badge{display:inline-block;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.4);color:#93c5fd;font-family:'JetBrains Mono',monospace;font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:999px;margin-bottom:1rem;letter-spacing:0.05em;}
+h1{font-size:2rem;font-weight:800;margin:0 0 0.5rem;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.subtitle{color:var(--muted);margin:0 0 1.5rem;font-size:1rem;}
+.meta-pills{display:flex;flex-wrap:wrap;gap:0.6rem;}
+.pill{background:var(--bg-soft);border:1px solid var(--border);border-radius:999px;padding:0.4rem 1rem;font-size:0.85rem;font-family:'JetBrains Mono',monospace;color:var(--text);}
+.pill .label{color:var(--muted);margin-right:0.3rem;}
+main{max-width:1100px;margin:0 auto;padding:1.5rem;}
+.tabs{display:flex;gap:0.4rem;overflow-x:auto;padding-bottom:0.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.tab{flex:0 0 auto;background:transparent;border:none;color:var(--muted);font-family:'Sora',sans-serif;font-weight:600;font-size:0.85rem;padding:0.6rem 1.1rem;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.tab:hover{color:var(--text);background:rgba(148,163,184,0.08);}
+.tab.active{color:#fff;background:linear-gradient(135deg,var(--primary),var(--purple));}
+.panel{display:none;animation:fade .3s ease;}
+.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.card{background:var(--bg-soft);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.2rem;}
+.section-title{display:flex;align-items:center;gap:0.6rem;font-size:1.15rem;font-weight:700;margin:0 0 1rem;color:#fff;}
+.icon-bg{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.icon-blue{background:rgba(59,130,246,0.15);}
+.icon-purple{background:rgba(139,92,246,0.15);}
+.progress-track{height:8px;background:var(--bg);border-radius:999px;overflow:hidden;border:1px solid var(--border);margin-bottom:1.5rem;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .4s ease;}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-size:0.85rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.qtag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:6px;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.6rem;}
+.tag-s1{background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);}
+.tag-s2{background:rgba(139,92,246,0.15);color:#c4b5fd;border:1px solid rgba(139,92,246,0.3);}
+.question-text{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:1.2rem;}
+.quiz-option{background:rgba(30,41,59,0.4);border:2px solid rgba(148,163,184,0.2);transition:all 0.2s ease;cursor:pointer;padding:0.9rem 1.1rem;border-radius:10px;margin-bottom:0.7rem;font-size:0.92rem;}
+.quiz-option:hover{background:rgba(30,41,59,0.7);border-color:rgba(96,165,250,0.5);}
+.quiz-option.correct{border-color:var(--secondary);background:rgba(34,197,94,0.15);}
+.quiz-option.incorrect{border-color:var(--danger);background:rgba(239,68,68,0.15);}
+.quiz-option.disabled{cursor:default;}
+.feedback-box{margin-top:1rem;padding:1rem 1.2rem;border-radius:0 8px 8px 0;font-size:0.9rem;display:none;}
+.feedback-box.correct{background:rgba(34,197,94,0.1);border-left:4px solid var(--secondary);display:block;}
+.feedback-box.incorrect{background:rgba(239,68,68,0.1);border-left:4px solid var(--danger);display:block;}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;}
+.nav-btn{background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;border:none;padding:0.65rem 1.4rem;border-radius:8px;font-family:'Sora',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .2s;}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,0.3);}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.nav-btn.ghost{background:var(--bg-soft);border:1px solid var(--border);}
+.nav-btn.amber{background:linear-gradient(135deg,var(--accent),#d97706);}
+.result-panel{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-top:1rem;text-align:center;}
+.score-badge{background:linear-gradient(135deg,#22c55e 0%,#10b981 100%);color:white;padding:0.5rem 1.2rem;border-radius:9999px;font-weight:700;display:inline-block;font-family:'JetBrains Mono',monospace;font-size:1.1rem;margin-bottom:0.8rem;}
+
+/* Associations */
+.assoc-block{margin-bottom:2.5rem;}
+.assoc-block-title{font-size:1rem;font-weight:700;color:#60a5fa;margin:0 0 0.5rem;}
+.assoc-hint{font-size:0.82rem;color:var(--muted);margin:0 0 1rem;font-style:italic;}
+.assoc-container{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:0.5rem 0;}
+.assoc-column{display:flex;flex-direction:column;gap:0.6rem;}
+.assoc-col-title{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;font-family:'JetBrains Mono',monospace;}
+.assoc-item{padding:0.75rem 1rem;border-radius:10px;border:2px solid rgba(148,163,184,0.2);background:rgba(30,41,59,0.4);cursor:pointer;font-size:0.87rem;line-height:1.45;transition:all 0.2s;display:flex;align-items:center;gap:0.5rem;min-height:52px;}
+.assoc-item:hover:not(.dis){border-color:rgba(96,165,250,0.5);background:rgba(30,41,59,0.7);}
+.assoc-item.sel{border-color:var(--accent)!important;background:rgba(245,158,11,0.12)!important;box-shadow:0 0 0 3px rgba(245,158,11,0.2);}
+.assoc-item.dis{cursor:default;}
+.assoc-item.bp0{border-color:#3b82f6;background:rgba(59,130,246,0.1);}
+.assoc-item.bp1{border-color:#22c55e;background:rgba(34,197,94,0.1);}
+.assoc-item.bp2{border-color:#f59e0b;background:rgba(245,158,11,0.1);}
+.assoc-item.bp3{border-color:#8b5cf6;background:rgba(139,92,246,0.1);}
+.assoc-item.bp4{border-color:#ef4444;background:rgba(239,68,68,0.1);}
+.assoc-item.ok{border-color:#22c55e!important;background:rgba(34,197,94,0.18)!important;}
+.assoc-item.ko{border-color:#ef4444!important;background:rgba(239,68,68,0.18)!important;}
+.pdot{width:18px;height:18px;border-radius:50%;font-size:0.65rem;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;line-height:18px;flex-shrink:0;margin-left:auto;}
+.pd0{background:#3b82f6;color:#fff;}
+.pd1{background:#22c55e;color:#fff;}
+.pd2{background:#f59e0b;color:#0f172a;}
+.pd3{background:#8b5cf6;color:#fff;}
+.pd4{background:#ef4444;color:#fff;}
+.assoc-actions{display:flex;gap:0.8rem;margin-top:1rem;align-items:center;flex-wrap:wrap;}
+.assoc-count{font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--muted);}
+.correction-block{margin-top:1rem;padding:1rem 1.2rem;background:rgba(15,23,42,0.6);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;font-size:0.85rem;}
+.correction-block strong{color:#c4b5fd;}
+.correction-row{margin:0.4rem 0;color:var(--text);}
+.correction-row .cr-term{color:#fcd34d;font-weight:600;}
+.correction-row .cr-def{color:#86efac;}
+@media(max-width:700px){.assoc-container{grid-template-columns:1fr;}}
+footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;border-top:1px solid var(--border);margin-top:2rem;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">M1 UX/UI · RÉVISION · SÉANCES 1 &amp; 2</span>
+    <h1>Révision — Fondamentaux et protocole de test</h1>
+    <p class="subtitle">Support de révision interactif — Protocole et Tests Utilisateurs</p>
+    <div class="meta-pills">
+      <span class="pill"><span class="label">Module</span>Protocole et Tests Utilisateurs</span>
+      <span class="pill"><span class="label">QCM</span>20 questions</span>
+      <span class="pill"><span class="label">Associations</span>10 paires</span>
+      <span class="pill"><span class="label">Couvre</span>Séances 1 &amp; 2</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" data-tab="qcm">📝 QCM — 20 questions</button>
+    <button class="tab" data-tab="assoc">🔗 Associations — 10 paires</button>
+  </div>
+
+  <!-- QCM -->
+  <div class="panel active" id="qcm">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-blue">📝</span>QCM — Séances 1 &amp; 2</div>
+      <div class="progress-track"><div class="progress-fill" id="qprog" style="width:0%"></div></div>
+      <div class="quiz-meta">
+        <span id="qctr">Question 1 / 20</span>
+        <span id="qst"></span>
+      </div>
+      <div id="qtag"></div>
+      <div id="qq"></div>
+      <div id="qopts"></div>
+      <div id="qfb" class="feedback-box"></div>
+      <div class="quiz-nav">
+        <button class="nav-btn ghost" id="qprev" onclick="nav(-1)">← Précédent</button>
+        <button class="nav-btn" id="qnext" onclick="nav(1)" disabled>Suivant →</button>
+      </div>
+      <div id="qres" class="result-panel" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- ASSOCIATIONS -->
+  <div class="panel" id="assoc">
+    <div class="card">
+      <div class="section-title"><span class="icon-bg icon-purple">🔗</span>Associations — Reliez chaque terme à sa définition</div>
+      <p style="font-size:0.88rem;color:var(--muted);margin:0 0 1.5rem;">Cliquez sur un terme (gauche) pour le sélectionner (contour ambré), puis cliquez sur sa définition (droite) pour créer la paire. Cliquez à nouveau sur un terme déjà apparié pour le désapparier.</p>
+      <div id="assoc-ex1"></div>
+      <div id="assoc-ex2"></div>
+    </div>
+  </div>
+</main>
+
+<footer>Protocole et Tests Utilisateurs — M1 UX/UI · Révision S1 &amp; S2 · EEMI · 2025-2026</footer>
+
+<script>
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+/* ======= QCM DATA ======= */
+const Q=[
+  // S1 Ch1
+  {tag:'s1',lbl:'Séance 1 — Ch.1',
+   q:"Dans la démarche UX, quel maillon referme la boucle « recherche → conception → … » ?",
+   opts:[
+     {t:"Test utilisateur",c:true},
+     {t:"Déploiement en production",c:false},
+     {t:"Audit de performance technique",c:false},
+     {t:"Recette fonctionnelle",c:false}
+   ],
+   exp:"Le test utilisateur referme la boucle itérative en confrontant les choix de conception à l'usage réel d'une vraie personne."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.1',
+   q:"Selon la courbe de coût de l'erreur, à quelle étape la correction est-elle la moins coûteuse ?",
+   opts:[
+     {t:"Concept / croquis (1×)",c:true},
+     {t:"Wireframe (3×)",c:false},
+     {t:"Prototype (8×)",c:false},
+     {t:"Production (20×+)",c:false}
+   ],
+   exp:"Le coût augmente à chaque étape : 1× au stade concept, 3× wireframe, 8× prototype, 20×+ en production. Intervenir tôt est fortement recommandé."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.1',
+   q:"Le « biais d'équipe » (curse of knowledge) se manifeste quand :",
+   opts:[
+     {t:"L'équipe n'a pas de budget pour recruter des participants",c:false},
+     {t:"L'équipe perçoit comme évidentes des choses inconnues des utilisateurs",c:true},
+     {t:"L'équipe teste trop tôt dans le cycle de développement",c:false},
+     {t:"L'équipe ne documente pas ses décisions de conception",c:false}
+   ],
+   exp:"Plus on travaille longtemps sur un produit, plus on oublie ce qui reste confus pour un utilisateur qui le découvre pour la première fois."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.1',
+   q:"Parmi ces résultats, lequel un test utilisateur ne peut PAS garantir seul ?",
+   opts:[
+     {t:"Identifier des points de confusion dans un parcours",c:false},
+     {t:"Recueillir le ressenti face à une interface",c:false},
+     {t:"Valider la pertinence business ou commerciale du produit",c:true},
+     {t:"Révéler des comportements non anticipés par l'équipe",c:false}
+   ],
+   exp:"Le test utilisateur éclaire l'usage et le ressenti, mais ne valide pas à lui seul la viabilité commerciale ou business du produit."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.1',
+   q:"Contrairement au test utilisateur, l'audit ergonomique expert :",
+   opts:[
+     {t:"Implique l'observation de vraies personnes en interaction avec le produit",c:false},
+     {t:"Repose sur des données statistiques issues d'un grand échantillon",c:false},
+     {t:"Est mené par un expert UX sans utilisateur réel, à partir de référentiels",c:true},
+     {t:"Nécessite toujours un prototype cliquable et une connexion internet",c:false}
+   ],
+   exp:"L'audit expert analyse l'interface à partir de référentiels (heuristiques) sans impliquer d'utilisateurs réels, contrairement au test utilisateur."
+  },
+  // S1 Ch2
+  {tag:'s1',lbl:'Séance 1 — Ch.2',
+   q:"La différence principale entre un test modéré et un test non-modéré est :",
+   opts:[
+     {t:"Le type d'interface testée (web vs mobile)",c:false},
+     {t:"La présence ou l'absence d'un animateur interagissant en direct",c:true},
+     {t:"Le nombre minimal de participants requis",c:false},
+     {t:"Le format de restitution des résultats",c:false}
+   ],
+   exp:"Dans un test modéré, l'animateur est présent et peut relancer ; dans un test non-modéré, le participant suit seul des consignes écrites."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.2',
+   q:"Un test qualitatif vise principalement à :",
+   opts:[
+     {t:"Mesurer des taux de réussite sur un large échantillon représentatif",c:false},
+     {t:"Comparer les performances de deux versions d'une interface",c:false},
+     {t:"Comprendre en profondeur le « pourquoi » d'un comportement observé",c:true},
+     {t:"Automatiser la collecte de données à grande échelle",c:false}
+   ],
+   exp:"Le qualitatif cherche à comprendre les motivations et comportements, sur un nombre restreint de participants — à l'inverse du quantitatif qui mesure des chiffres."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.2',
+   q:"Un test mené à distance offre comme avantage principal :",
+   opts:[
+     {t:"L'observation directe et fine du langage corporel du participant",c:false},
+     {t:"La garantie d'un meilleur taux de réussite sur les tâches",c:false},
+     {t:"La possibilité de recruter des participants géographiquement dispersés",c:true},
+     {t:"L'élimination totale du besoin de consignes écrites",c:false}
+   ],
+   exp:"La distance facilite le recrutement sur une zone géographique large et réduit les contraintes logistiques de déplacement."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.2',
+   q:"Le test de concept est typiquement utilisé :",
+   opts:[
+     {t:"Uniquement après la mise en production du produit fini",c:false},
+     {t:"Très tôt dans le projet, avant même la conception détaillée",c:true},
+     {t:"En remplacement systématique du test d'utilisabilité",c:false},
+     {t:"Uniquement pour vérifier la conformité légale d'une interface",c:false}
+   ],
+   exp:"Le test de concept évalue si une idée suscite de l'intérêt ou de la compréhension, bien avant les wireframes ou prototypes détaillés."
+  },
+  {tag:'s1',lbl:'Séance 1 — Ch.2',
+   q:"Dans la matrice de choix de méthode, quel critère est le MOINS déterminant ?",
+   opts:[
+     {t:"L'objectif principal du test (comprendre vs mesurer)",c:false},
+     {t:"Le niveau de maturité du produit (idée, prototype, production)",c:false},
+     {t:"L'esthétique et les couleurs de l'interface testée",c:true},
+     {t:"Le budget et le temps disponibles pour mener le test",c:false}
+   ],
+   exp:"L'objectif, la maturité du produit, les ressources et la cible orientent le choix de méthode — pas l'apparence visuelle de l'interface."
+  },
+  // S2 Ch1
+  {tag:'s2',lbl:'Séance 2 — Ch.1',
+   q:"Un « objectif de test » se distingue d'un « besoin business » car il est :",
+   opts:[
+     {t:"Plus large, couvrant tous les aspects du produit",c:false},
+     {t:"Centré sur l'usage et formulé comme une question précise testable",c:true},
+     {t:"Exprimé uniquement en termes financiers ou de conversion",c:false},
+     {t:"Défini après l'analyse des premiers résultats du test",c:false}
+   ],
+   exp:"L'objectif de test traduit un besoin business en une question précise sur l'usage à laquelle un test peut répondre."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.1',
+   q:"Pour être testable, une hypothèse doit être « falsifiable », c'est-à-dire :",
+   opts:[
+     {t:"Elle doit avoir été validée par le chef de projet",c:false},
+     {t:"Elle doit forcément être confirmée par le test",c:false},
+     {t:"Il doit être possible qu'elle s'avère fausse à l'observation",c:true},
+     {t:"Elle doit s'appliquer à l'ensemble des fonctionnalités du produit",c:false}
+   ],
+   exp:"Une hypothèse qui ne peut jamais être contredite n'apprend rien — la falsifiabilité est un critère fondamental pour qu'elle soit exploitable."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.1',
+   q:"« Comment les utilisateurs s'orientent-ils sur la page d'accueil ? » est un exemple de :",
+   opts:[
+     {t:"KPI de succès du test",c:false},
+     {t:"Hypothèse-solution",c:false},
+     {t:"Question de recherche",c:true},
+     {t:"Critère d'exclusion du recrutement",c:false}
+   ],
+   exp:"Une question de recherche est ouverte et exploratoire ; elle peut donner naissance à plusieurs objectifs de test plus précis et ciblés."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.1',
+   q:"Définir le périmètre d'un test avant de commencer permet principalement de :",
+   opts:[
+     {t:"Réduire automatiquement le nombre de participants nécessaires",c:false},
+     {t:"Garantir que la session ne dépassera pas une heure",c:false},
+     {t:"Obtenir des résultats interprétables en évitant de mélanger plusieurs parcours",c:true},
+     {t:"Remplacer entièrement la rédaction des hypothèses",c:false}
+   ],
+   exp:"Sans périmètre clair, le test s'étend, les résultats mélangent plusieurs parcours et les conclusions deviennent difficiles à tirer."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.1',
+   q:"« Les utilisateurs vont adorer cette nouvelle fonctionnalité » est un exemple de :",
+   opts:[
+     {t:"Hypothèse testable bien formulée",c:false},
+     {t:"Objectif de test précis",c:false},
+     {t:"Hypothèse de confirmation",c:true},
+     {t:"KPI de succès du test",c:false}
+   ],
+   exp:"Cette phrase est formulée pour être confirmée a priori — elle oriente déjà l'interprétation des résultats avant toute observation."
+  },
+  // S2 Ch2
+  {tag:'s2',lbl:'Séance 2 — Ch.2',
+   q:"Parmi ces formulations, laquelle constitue une bonne tâche de test orientée but ?",
+   opts:[
+     {t:"« Cliquez sur l'icône loupe en haut à droite, tapez 'chaussures' et validez. »",c:false},
+     {t:"« Trouvez facilement la section Nouveautés. »",c:false},
+     {t:"« Vous cherchez une paire de chaussures de sport. Montrez-moi comment vous procéderiez. »",c:true},
+     {t:"« Utilisez le menu de configuration pour accéder aux paramètres avancés. »",c:false}
+   ],
+   exp:"Une bonne tâche présente un but clair, un contexte réaliste et ne révèle pas la solution — elle laisse le participant choisir son propre chemin."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.2',
+   q:"La consigne « Trouvez facilement le bouton de paramètres » est biaisée principalement car :",
+   opts:[
+     {t:"Elle ne précise pas de durée maximale pour la tâche",c:false},
+     {t:"Le mot « facilement » présuppose un résultat positif avant même le test",c:true},
+     {t:"Elle utilise le terme technique « paramètres » inconnu du participant",c:false},
+     {t:"Elle est trop courte pour être comprise sans contexte",c:false}
+   ],
+   exp:"Suggérer qu'une action devrait être facile conditionne la perception du participant et biaise ses comportements et réponses."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.2',
+   q:"Concernant l'ordre des tâches dans un script de test, il est recommandé de :",
+   opts:[
+     {t:"Toujours commencer par la tâche la plus complexe et chronophage",c:false},
+     {t:"Présenter les tâches dans un ordre aléatoire pour éviter tout biais",c:false},
+     {t:"Commencer par une tâche simple pour mettre le participant à l'aise",c:true},
+     {t:"Regrouper toutes les questions pré/post-test entre les tâches",c:false}
+   ],
+   exp:"Une progression du simple vers le complexe aide le participant à se familiariser avec l'exercice avant d'aborder des tâches plus exigeantes."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.2',
+   q:"Les questions post-test comprennent typiquement :",
+   opts:[
+     {t:"La vérification du profil et des données démographiques du participant",c:false},
+     {t:"Un questionnaire de satisfaction standardisé (ex. SUS) et une question ouverte de clôture",c:true},
+     {t:"L'explication des objectifs du test et la présentation de l'équipe",c:false},
+     {t:"Le consentement à l'enregistrement et les consignes de think aloud",c:false}
+   ],
+   exp:"Le post-test recueille le ressenti global, un score standardisé (SUS) et une question ouverte pour capturer ce qui n'a pas encore été abordé."
+  },
+  {tag:'s2',lbl:'Séance 2 — Ch.2',
+   q:"Dans un script de test, les « notes pour l'animateur » se distinguent des consignes au participant car elles :",
+   opts:[
+     {t:"Doivent être lues à voix haute en début de session pour informer le participant",c:false},
+     {t:"Remplacent entièrement les formulations de tâches dans le document",c:false},
+     {t:"Sont des indications internes (relances, points d'attention) non communiquées au participant",c:true},
+     {t:"Ne s'appliquent qu'aux tests non-modérés à distance",c:false}
+   ],
+   exp:"Le script sépare ce qui doit être dit mot pour mot au participant des repères internes qui guident l'animateur (quand relancer, quoi observer)."
+  }
+];
+
+const qs={cur:0,ans:new Array(Q.length).fill(null),sh:[]};
+
+function initQ(){
+  qs.sh=Q.map(q=>({...q,opts:shuffle(q.opts)}));
+  renderQ();
+}
+
+function renderQ(){
+  const n=Q.length,i=qs.cur,q=qs.sh[i];
+  document.getElementById('qctr').textContent=`Question ${i+1} / ${n}`;
+  document.getElementById('qprog').style.width=`${(i/n)*100}%`;
+  document.getElementById('qtag').innerHTML=`<span class="qtag tag-${q.tag}">${q.lbl}</span>`;
+  document.getElementById('qq').innerHTML=`<div class="question-text">${q.q}</div>`;
+  const od=document.getElementById('qopts');
+  od.innerHTML='';
+  const ua=qs.ans[i];
+  q.opts.forEach((opt,oi)=>{
+    const d=document.createElement('div');
+    d.className='quiz-option';
+    d.textContent=opt.t;
+    if(ua!==null){
+      d.classList.add('disabled');
+      if(oi===ua) d.classList.add(opt.c?'correct':'incorrect');
+      else if(opt.c) d.classList.add('correct');
+    } else {
+      d.onclick=()=>{qs.ans[i]=oi;renderQ();};
+    }
+    od.appendChild(d);
+  });
+  const fb=document.getElementById('qfb');
+  fb.className='feedback-box';
+  fb.innerHTML='';
+  if(ua!==null){
+    const ok=q.opts[ua].c;
+    fb.classList.add(ok?'correct':'incorrect');
+    fb.innerHTML=`${ok?'✓ Correct.':'✗ Incorrect.'} ${q.exp}`;
+  }
+  document.getElementById('qprev').disabled=(i===0);
+  const nb=document.getElementById('qnext');
+  nb.disabled=(ua===null);
+  nb.textContent=(i===n-1)?'Voir le score →':'Suivant →';
+  document.getElementById('qres').style.display='none';
+}
+
+function nav(d){
+  const n=Q.length;
+  if(d===1&&qs.cur===n-1){showRes();return;}
+  qs.cur=Math.max(0,Math.min(n-1,qs.cur+d));
+  renderQ();
+}
+
+function showRes(){
+  const n=Q.length;
+  let sc=0;
+  qs.sh.forEach((q,i)=>{const a=qs.ans[i];if(a!==null&&q.opts[a].c)sc++;});
+  document.getElementById('qprog').style.width='100%';
+  const rd=document.getElementById('qres');
+  rd.style.display='block';
+  const p=Math.round(sc/n*100);
+  const m=p>=90?'Excellent !':p>=70?'Bien !':p>=50?'À retravailler.':'À reprendre depuis le début.';
+  rd.innerHTML=`<div class="score-badge">${sc} / ${n} (${p}%) — ${m}</div>
+    <div style="margin-top:0.8rem"><button class="nav-btn ghost" onclick="restartQ()">↻ Recommencer</button></div>`;
+  rd.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function restartQ(){
+  qs.cur=0;qs.ans=new Array(Q.length).fill(null);initQ();
+}
+
+/* ======= ASSOCIATIONS DATA ======= */
+const ADATA=[
+  {
+    id:'ex1',
+    title:'Exercice 1 — Séance 1 : Termes et définitions',
+    hint:'Associez chaque terme (gauche) à sa définition correcte (droite).',
+    pairs:[
+      {term:"Biais d'équipe (curse of knowledge)",
+       def:"Tendance d'une équipe à considérer comme évidentes des informations que l'utilisateur découvrant le produit ne possède pas"},
+      {term:"Hypothèse de conception",
+       def:"Affirmation implicite de l'équipe sur la façon dont les utilisateurs vont comprendre ou utiliser le produit, rendue explicite pour être vérifiée"},
+      {term:"Test de concept",
+       def:"Test mené très tôt pour évaluer l'intérêt ou la compréhension d'une idée avant même la conception détaillée"},
+      {term:"Test A/B",
+       def:"Comparaison de deux versions d'une interface en production, sur du trafic réel, pour mesurer laquelle obtient les meilleurs résultats"},
+      {term:"Audit ergonomique expert",
+       def:"Évaluation d'une interface par un expert UX à partir de référentiels (heuristiques), sans observation d'utilisateurs réels"}
+    ]
+  },
+  {
+    id:'ex2',
+    title:'Exercice 2 — Séance 2 : Concepts et caractéristiques',
+    hint:'Associez chaque concept (gauche) à sa description correcte (droite).',
+    pairs:[
+      {term:"Hypothèse testable",
+       def:"Affirmation spécifique, observable et falsifiable sur un comportement attendu, qui peut être confirmée ou infirmée par un test"},
+      {term:"Tâche de test",
+       def:"Action concrète formulée comme un but à atteindre par le participant, sans révéler la solution attendue"},
+      {term:"Script de test",
+       def:"Document structurant le déroulé complet d'un test : introduction, questions pré-test, tâches, questions post-test et débrief"},
+      {term:"KPI de succès du test",
+       def:"Seuil défini avant le test (taux de réussite, temps, score) permettant d'évaluer objectivement le résultat sans biais d'interprétation a posteriori"},
+      {term:"Notes pour l'animateur",
+       def:"Indications internes au script (points d'attention, relances possibles) distinctes des formulations destinées au participant"}
+    ]
+  }
+];
+
+const AS={};
+ADATA.forEach(ex=>{
+  AS[ex.id]={sel:null,pairs:{},sdefs:[],checked:false};
+});
+
+function initA(){
+  ADATA.forEach(ex=>{
+    const s=AS[ex.id];
+    s.sel=null;s.pairs={};s.checked=false;
+    s.sdefs=shuffle(ex.pairs.map((p,i)=>({def:p.def,oi:i})));
+    renderA(ex.id);
+  });
+}
+
+function findTermForDef(exId,oi){
+  const s=AS[exId];
+  for(const[t,d]of Object.entries(s.pairs)){if(Number(d)===oi)return Number(t);}
+  return null;
+}
+
+function renderA(exId){
+  const ex=ADATA.find(e=>e.id===exId);
+  const s=AS[exId];
+  let h=`<div class="assoc-block-title">${ex.title}</div>`;
+  h+=`<p class="assoc-hint">${ex.hint}</p>`;
+  h+=`<div class="assoc-container">`;
+
+  // Left: terms
+  h+=`<div class="assoc-column"><div class="assoc-col-title">Termes / Concepts</div>`;
+  ex.pairs.forEach((p,ti)=>{
+    const pw=s.pairs.hasOwnProperty(ti)?s.pairs[ti]:null;
+    let cls='assoc-item';
+    if(s.sel===ti) cls+=' sel';
+    if(pw!==null&&!s.checked) cls+=` bp${ti}`;
+    if(s.checked&&pw!==null) cls+=(Number(pw)===ti)?' ok':' ko';
+    if(s.checked) cls+=' dis';
+    const dot=pw!==null?`<span class="pdot pd${ti}">${ti+1}</span>`:'';
+    h+=`<div class="${cls}" onclick="clickT('${exId}',${ti})">${p.term}${dot}</div>`;
+  });
+  h+=`</div>`;
+
+  // Right: shuffled defs
+  h+=`<div class="assoc-column"><div class="assoc-col-title">Définitions / Descriptions</div>`;
+  s.sdefs.forEach(defObj=>{
+    const ti=findTermForDef(exId,defObj.oi);
+    let cls='assoc-item';
+    if(ti!==null&&!s.checked) cls+=` bp${ti}`;
+    if(s.checked&&ti!==null) cls+=(ti===defObj.oi)?' ok':' ko';
+    if(s.checked) cls+=' dis';
+    const dot=ti!==null?`<span class="pdot pd${ti}">${ti+1}</span>`:'';
+    h+=`<div class="${cls}" onclick="clickD('${exId}',${defObj.oi})">${defObj.def}${dot}</div>`;
+  });
+  h+=`</div></div>`;
+
+  // Actions
+  const np=Object.keys(s.pairs).length;
+  const total=ex.pairs.length;
+  h+=`<div class="assoc-actions">`;
+  if(!s.checked){
+    h+=`<button class="nav-btn amber" onclick="checkA('${exId}')" ${np===total?'':'disabled'}>Vérifier les paires</button>`;
+    h+=`<button class="nav-btn ghost" onclick="resetA('${exId}')">↻ Réinitialiser</button>`;
+    if(np<total) h+=`<span class="assoc-count">${np} / ${total} appariés</span>`;
+  } else {
+    const sc=countOk(exId);
+    h+=`<span style="background:linear-gradient(135deg,#22c55e,#10b981);color:#fff;padding:0.4rem 1.1rem;border-radius:999px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.9rem;">Score : ${sc} / ${total}</span>`;
+    h+=`<button class="nav-btn ghost" onclick="resetA('${exId}')">↻ Réessayer</button>`;
+    // Show corrections for wrong pairs
+    const wrongs=ex.pairs.filter((_,i)=>s.pairs.hasOwnProperty(i)&&Number(s.pairs[i])!==i);
+    if(wrongs.length>0){
+      h+=`</div><div class="correction-block"><strong>Corrections :</strong>`;
+      ex.pairs.forEach((p,i)=>{
+        if(s.pairs.hasOwnProperty(i)&&Number(s.pairs[i])!==i){
+          h+=`<div class="correction-row"><span class="cr-term">${p.term}</span> → <span class="cr-def">${p.def}</span></div>`;
+        }
+      });
+      h+=`</div>`;
+      h+=`<div class="assoc-actions">`;// reopen for spacing
+    }
+  }
+  h+=`</div>`;
+
+  document.getElementById(`assoc-${exId}`).innerHTML=h;
+}
+
+function clickT(exId,ti){
+  const s=AS[exId];
+  if(s.checked)return;
+  if(s.sel===ti){s.sel=null;}
+  else if(s.pairs.hasOwnProperty(ti)){delete s.pairs[ti];s.sel=ti;}
+  else{s.sel=ti;}
+  renderA(exId);
+}
+
+function clickD(exId,oi){
+  const s=AS[exId];
+  if(s.checked||s.sel===null)return;
+  // Remove any existing pairing of this def
+  for(const[t,d]of Object.entries(s.pairs)){if(Number(d)===oi){delete s.pairs[t];break;}}
+  s.pairs[s.sel]=oi;
+  s.sel=null;
+  renderA(exId);
+}
+
+function checkA(exId){AS[exId].checked=true;renderA(exId);}
+
+function resetA(exId){
+  const s=AS[exId];
+  s.sel=null;s.pairs={};s.checked=false;
+  s.sdefs=shuffle(ADATA.find(e=>e.id===exId).pairs.map((p,i)=>({def:p.def,oi:i})));
+  renderA(exId);
+}
+
+function countOk(exId){
+  const s=AS[exId];
+  let c=0;
+  for(const[t,d]of Object.entries(s.pairs)){if(Number(d)===Number(t))c++;}
+  return c;
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+initQ();
+initA();
+</script>
+</body>
+</html>
