@@ -264,24 +264,25 @@ footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;b
     <div class="card">
       <div class="section-title"><span class="icon-bg icon-blue">🎯</span>Chapitre 1 — Posture du modérateur et protocole think-aloud</div>
       <div class="objectif-box">
-        Comprendre le rôle du modérateur pendant une session de test, maîtriser le protocole think-aloud, et identifier les principaux biais liés à la posture de l'observateur pour les éviter en situation réelle.
+        Comprendre le rôle du modérateur pendant une session de test, maîtriser le protocole think-aloud, et identifier les principaux biais liés à la posture de l'animateur pour les anticiper en situation réelle.
       </div>
 
       <div class="subsection-title">1.1 — Le rôle du modérateur</div>
       <div class="famille-tags"><span class="tag f1">Fondamentaux</span></div>
-      <p>Le script de test (rédigé en séance 2, transposé en séance 3) prépare le contenu de la session. Mais sa réussite dépend tout autant de la <strong>posture du modérateur</strong> : la personne qui anime la session doit guider sans influencer, observer sans interrompre, et créer un climat de confiance permettant au participant d'agir et de s'exprimer naturellement.</p>
+      <p>Un script de test, aussi bien construit soit-il, ne garantit pas à lui seul la qualité des données collectées. La <strong>posture du modérateur</strong> — la personne qui anime la session — est tout aussi déterminante : guider sans influencer, observer sans interrompre, et créer un climat de confiance qui permet au participant d'agir et de s'exprimer naturellement.</p>
+      <p>Cette posture repose sur une distinction fondamentale : le modérateur n'est pas là pour évaluer le participant, mais pour observer comment le <strong>produit</strong> se comporte face à un utilisateur réel. Un participant qui ne parvient pas à accomplir une tâche ne révèle pas son incompétence — il révèle un problème d'interface.</p>
       <div class="example-card">
         <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
-        Le modérateur n'est pas là pour évaluer le participant, mais pour observer comment le <strong>produit</strong> se comporte face à un utilisateur réel. Un participant qui "échoue" une tâche ne révèle pas son incompétence, mais un problème d'interface.
+        La réussite ou l'échec d'une tâche est une information sur le produit, pas un jugement sur le participant. Formuler et communiquer cette distinction clairement en introduction de session conditionne la qualité de l'ensemble des observations.
       </div>
 
       <div class="subsection-title">1.2 — Le protocole think-aloud</div>
       <div class="famille-tags"><span class="tag f2">Méthodologie</span></div>
-      <p>Le <strong>think-aloud</strong> (penser à voix haute) consiste à demander au participant de verbaliser en continu ses pensées, intentions et impressions pendant qu'il accomplit les tâches : ce qu'il regarde, ce qu'il s'attend à trouver, pourquoi il clique à tel endroit.</p>
+      <p>Le <strong>think-aloud</strong> (penser à voix haute) est une technique qui consiste à demander au participant de verbaliser en continu ses pensées, intentions et impressions pendant qu'il accomplit les tâches : ce qu'il regarde, ce qu'il s'attend à trouver, pourquoi il clique à tel endroit. C'est l'une des techniques les plus utilisées en test d'utilisabilité modéré, précisément parce qu'elle donne accès au raisonnement en cours d'action — et non seulement au résultat.</p>
       <ul>
-        <li><strong>Avant la tâche</strong> : expliquer le principe et faire une courte démonstration si besoin ("dites-moi tout ce qui vous passe par la tête, même si ça semble évident")</li>
-        <li><strong>Pendant la tâche</strong> : relancer doucement si le participant devient silencieux ("qu'est-ce que vous regardez actuellement ?"), sans interrompre son raisonnement</li>
-        <li><strong>Limite à connaître</strong> : verbaliser peut légèrement modifier le comportement naturel (charge cognitive supplémentaire) — c'est un compromis accepté pour accéder au raisonnement</li>
+        <li><strong>En amont des tâches</strong> : le modérateur explique le principe et peut faire une courte démonstration pour illustrer le niveau de verbalisation attendu ("dites-moi tout ce qui vous passe par la tête, même si ça semble évident")</li>
+        <li><strong>Pendant les tâches</strong> : si le participant devient silencieux, une relance douce permet de maintenir la verbalisation sans rompre son raisonnement ("qu'est-ce que vous regardez actuellement ?")</li>
+        <li><strong>Limite à connaître</strong> : verbaliser ajoute une charge cognitive qui peut légèrement modifier le comportement naturel du participant — c'est un compromis accepté pour accéder au raisonnement en temps réel</li>
       </ul>
 
       <div class="illustration">
@@ -291,12 +292,12 @@ footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;b
 
       <div class="subsection-title">1.3 — Relances neutres pour maintenir la verbalisation</div>
       <div class="famille-tags"><span class="tag f3">Pratique</span></div>
-      <p>Lorsque le participant devient silencieux, le modérateur peut relancer — mais la formulation de la relance ne doit jamais orienter vers une action ou un jugement :</p>
+      <p>Lorsque le participant devient silencieux, le modérateur peut relancer — mais la formulation de la relance ne doit jamais orienter vers une action ou un jugement. Une relance neutre remet le participant en mode verbalisation sans lui donner d'indice sur ce qu'il devrait faire ou penser.</p>
       <div class="grid2">
         <div class="example-card" style="border-left-color:var(--danger);">
           <strong style="color:#fca5a5;">✗ Relance orientée</strong><br>
           <em>"Vous avez vu le bouton en bas à droite ?"</em><br>
-          Révèle l'emplacement de la solution et interrompt le raisonnement du participant.
+          Révèle l'emplacement de la solution et court-circuite le raisonnement du participant.
         </div>
         <div class="example-card">
           <strong style="color:#86efac;">✓ Relance neutre</strong><br>
@@ -304,22 +305,28 @@ footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;b
           Remet le participant en mode verbalisation sans donner d'indice.
         </div>
       </div>
+      <p style="margin-top:1rem;">D'autres formulations neutres couramment utilisées : <em>"Pouvez-vous me décrire ce que vous voyez ?"</em>, <em>"Qu'est-ce que vous vous attendiez à trouver ici ?"</em>, <em>"Que se passerait-il, selon vous, si vous cliquiez sur cet élément ?"</em>. Toutes visent à relancer la verbalisation sans orienter l'action.</p>
 
       <div class="subsection-title">1.4 — Le biais de l'observateur</div>
       <div class="famille-tags"><span class="tag f4">Anti-biais</span></div>
-      <p>Le <strong>biais de l'observateur</strong> désigne l'influence — souvent involontaire — du modérateur sur le comportement ou les réponses du participant. Il peut prendre plusieurs formes :</p>
+      <p>Le <strong>biais de l'observateur</strong> désigne l'influence — souvent involontaire — du modérateur sur le comportement ou les réponses du participant. Il se manifeste sous plusieurs formes :</p>
       <ul>
-        <li><strong>Réactions non verbales</strong> : sourire, froncement de sourcils, hochement de tête qui signale au participant qu'il est sur la "bonne" ou la "mauvaise" voie</li>
-        <li><strong>Aide prématurée</strong> : intervenir dès qu'un participant hésite, ce qui empêche d'observer comment il aurait résolu seul la difficulté</li>
-        <li><strong>Effet de désirabilité sociale</strong> : le participant a tendance à formuler des retours plus positifs en présence du créateur du produit, par politesse</li>
+        <li><strong>Réactions non verbales</strong> : un sourire, un froncement de sourcils ou un hochement de tête peut signaler au participant qu'il est sur la "bonne" ou la "mauvaise" voie, sans qu'un mot soit prononcé</li>
+        <li><strong>Aide prématurée</strong> : intervenir dès qu'un participant hésite prive la session d'une information clé — savoir si et comment il aurait résolu seul la difficulté</li>
+        <li><strong>Effet de désirabilité sociale</strong> : en présence de quelqu'un perçu comme l'auteur du produit, le participant tend à formuler des retours plus positifs par politesse — un biais difficile à éliminer, mais à anticiper lors de l'interprétation des données</li>
       </ul>
+      <div class="example-card">
+        <strong style="color:#fcd34d;">Pourquoi ce biais est difficile à éliminer</strong><br>
+        La plupart des réactions qui constituent ce biais sont involontaires et automatiques. La solution n'est pas de "ne rien ressentir", mais de prendre conscience des canaux par lesquels ces réactions peuvent transparaître — et de les surveiller activement pendant la session.
+      </div>
 
       <div class="subsection-title">1.5 — Neutralité et gestion des silences</div>
       <div class="famille-tags"><span class="tag f5">Posture</span></div>
-      <p>Un silence pendant une session n'est pas un problème à résoudre dans l'urgence : il peut signaler une réflexion en cours, une hésitation, ou un point de friction réel — toutes des informations utiles. Le modérateur apprend à <strong>tolérer l'inconfort du silence</strong> quelques secondes avant de relancer, plutôt que d'intervenir immédiatement.</p>
+      <p>Un silence pendant une session n'est pas un problème à résoudre dans l'urgence : il peut signaler une réflexion en cours, une hésitation, ou un point de friction réel — toutes des informations précieuses. La gestion du silence est l'une des compétences les plus difficiles à développer pour un modérateur, car l'inconfort naturel face au silence crée une pression à intervenir trop vite, effaçant ainsi la donnée que ce silence aurait pu fournir.</p>
+      <p>La règle pratique est d'attendre au minimum quelques secondes avant toute relance, en observant les comportements non verbaux du participant (regard, gestes, posture) qui peuvent à eux seuls constituer des observations exploitables.</p>
       <div class="example-card">
         <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
-        Un participant bloqué qui finit par trouver seul (même après un long silence) fournit une information précieuse : ce chemin existe, mais il est coûteux. Intervenir trop vite efface cette donnée.
+        Un participant bloqué qui finit par trouver seul — même après un long silence — fournit une information précieuse : le chemin existe, mais il est coûteux. Intervenir trop tôt efface cette donnée définitivement.
       </div>
     </div>
   </div>
@@ -348,73 +355,82 @@ footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;b
   <div class="panel" id="chap2">
 
     <div class="card">
-      <div class="section-title"><span class="icon-bg icon-green">📋</span>Chapitre 2 — Identifier les erreurs de modération et s'entraîner par jeu de rôle</div>
+      <div class="section-title"><span class="icon-bg icon-green">📋</span>Chapitre 2 — Analyser et corriger les erreurs de modération</div>
       <div class="objectif-box">
-        Savoir repérer les erreurs de modération courantes dans une session filmée, comprendre le déroulé d'un jeu de rôle en rotation de rôles, et identifier les biais observés pour les corriger lors des passages suivants.
+        Savoir identifier les erreurs de modération les plus fréquentes, comprendre les mécanismes de l'observation structurée d'une session, et connaître les principes d'une pratique réflexive permettant d'améliorer progressivement sa posture d'animateur.
       </div>
 
-      <div class="subsection-title">2.1 — Les trois rôles d'une session encadrée</div>
+      <div class="subsection-title">2.1 — Les trois positions d'observation d'une session</div>
       <div class="famille-tags"><span class="tag f1">Fondamentaux</span></div>
-      <p>Pour s'entraîner, une session de test peut être simulée en petit groupe avec trois rôles distincts :</p>
+      <p>Pour analyser une session de test dans toute sa complexité, il est utile de distinguer trois positions d'observation distinctes, chacune produisant un type d'information différent :</p>
       <ul>
-        <li><strong>Le modérateur</strong> : anime la session, applique le script transposé en séance 3, gère le think-aloud et les relances</li>
-        <li><strong>Le participant</strong> : incarne le profil cible et réalise les tâches en verbalisant ses pensées</li>
-        <li><strong>L'observateur</strong> : note les biais de modération, les moments de silence, les réactions non verbales — sans intervenir</li>
+        <li><strong>Le modérateur</strong> : en charge de l'animation, il applique le script, gère le think-aloud et les relances. Sa priorité est de maintenir la neutralité tout en garantissant que chaque tâche peut être réalisée dans les conditions prévues.</li>
+        <li><strong>Le participant</strong> : incarne le profil cible et réalise les tâches en verbalisant ses pensées. Son comportement constitue la matière première de l'observation.</li>
+        <li><strong>L'observateur</strong> : ne participe pas à l'animation — il documente les erreurs de modération, les moments de silence, les réactions non verbales du modérateur. Son rôle est de noter ce que le modérateur, concentré sur l'animation, ne peut pas percevoir de lui-même.</li>
       </ul>
       <div class="example-card">
         <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
-        Faire tourner les trois rôles permet à chaque étudiant de vivre la session depuis chaque position : on repère beaucoup mieux les biais de modération quand on les a soi-même commis ou observés de l'intérieur.
+        Les trois positions produisent des informations <strong>complémentaires</strong> : le modérateur pilote la session, le participant produit les données comportementales, l'observateur surveille la qualité de la collecte. Dans une session réelle, ces rôles peuvent être distribués entre plusieurs membres d'une équipe de recherche.
       </div>
 
-      <div class="subsection-title">2.2 — Identifier les erreurs sur une session filmée</div>
+      <div class="subsection-title">2.2 — Analyser une session filmée</div>
       <div class="famille-tags"><span class="tag f2">Analyse</span></div>
-      <p>Avant de se lancer dans le jeu de rôle, observer une session filmée (test bien mené vs test biaisé) permet d'identifier collectivement les erreurs sans pression. Les points à surveiller correspondent directement aux notions du chapitre 1 :</p>
+      <p>Le visionnage d'une session enregistrée est une méthode standard pour identifier les biais de modération à tête reposée, sans la pression du temps réel. Contrairement à l'observation en direct, l'analyse d'un enregistrement permet de revenir en arrière, de mettre en pause, et de confronter les lectures de plusieurs observateurs sur les mêmes passages.</p>
+      <p>Les points à surveiller lors de cette analyse sont directement liés aux mécanismes décrits au chapitre 1 : relances orientées, aide prématurée, réactions non verbales du modérateur, effet de désirabilité sociale dans les réponses du participant.</p>
 
       <div class="illustration">
         <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80" alt="Écran d'ordinateur affichant un enregistrement vidéo en cours de visionnage">
-        <div class="illustration-caption">Visionner une session filmée permet d'identifier les biais de modération à tête reposée, avant de les vivre en jeu de rôle</div>
+        <div class="illustration-caption">Visionner une session filmée permet d'identifier les biais de modération à tête reposée</div>
       </div>
 
       <div class="grid2">
         <div class="example-card" style="border-left-color:var(--danger);">
-          <strong style="color:#fca5a5;">Signaux à repérer — test biaisé</strong><br>
-          Aide donnée trop tôt, relances qui révèlent la solution, réactions du modérateur (sourires, soupirs), formulations qui présupposent une réponse positive.
+          <strong style="color:#fca5a5;">Signaux d'une session biaisée</strong><br>
+          Aide donnée trop tôt, relances révélant la solution, réactions du modérateur (sourires, soupirs), formulations présupposant une réponse positive ("vous avez trouvé facilement ?").
         </div>
         <div class="example-card">
-          <strong style="color:#86efac;">Signaux à repérer — test bien mené</strong><br>
-          Relances neutres, tolérance du silence, verbalisation maintenue par le participant, modérateur qui reste en retrait pendant les tâches.
+          <strong style="color:#86efac;">Signaux d'une session bien conduite</strong><br>
+          Relances neutres, tolérance du silence, verbalisation maintenue, modérateur en retrait pendant les tâches, transitions entre tâches fluides.
         </div>
       </div>
 
-      <div class="subsection-title">2.3 — Déroulé du jeu de rôle en rounds</div>
-      <div class="famille-tags"><span class="tag f3">Structuration</span></div>
-      <p>Le jeu de rôle se déroule en plusieurs rounds, avec un débrief intermédiaire entre chaque :</p>
+      <div class="subsection-title">2.3 — Les erreurs de modération les plus fréquentes</div>
+      <div class="famille-tags"><span class="tag f3">Catalogue</span></div>
+      <p>Certaines erreurs de modération reviennent systématiquement, y compris chez des animateurs expérimentés. Les connaître permet de les anticiper avant qu'elles ne se produisent :</p>
       <ul>
-        <li><strong>Round 1</strong> : premier passage du script transposé en séance 3, avec les rôles attribués (modérateur / participant / observateur)</li>
-        <li><strong>Débrief intermédiaire</strong> : retour collectif sur les erreurs de modération observées, ajustements avant le round suivant</li>
-        <li><strong>Rounds 2 et 3</strong> : rotation des rôles — chaque étudiant passe modérateur et observateur au moins une fois</li>
+        <li><strong>La reformulation de consigne</strong> : face à un participant qui ne comprend pas une tâche, le modérateur reformule spontanément — et révèle souvent involontairement un élément de la solution. La bonne pratique est de relire la consigne exacte telle qu'elle figure dans le script, sans l'adapter.</li>
+        <li><strong>L'encouragement implicite</strong> : des formules comme "très bien", "exactement" ou "parfait" après une action du participant signalent que le chemin emprunté est correct, orientant ainsi la suite du comportement.</li>
+        <li><strong>La question fermée de relance</strong> : "vous cherchez le bouton de validation ?" ou "c'est ce menu que vous voulez utiliser ?" — la structure fermée oriente vers une réponse binaire là où une question ouverte aurait laissé le participant libre de son raisonnement.</li>
+        <li><strong>L'annonce du temps restant</strong> : informer le participant en cours de tâche qu'il lui reste peu de temps introduit une pression absente dans un contexte d'usage réel, modifiant son comportement de façon artificielle.</li>
+      </ul>
+
+      <div class="subsection-title">2.4 — L'observation structurée : ce que l'observateur documente</div>
+      <div class="famille-tags"><span class="tag f4">Pratique</span></div>
+      <p>Une observation de session n'est utile que si elle est <strong>structurée</strong>. Un observateur sans grille de lecture produit des impressions générales peu exploitables. Les éléments à documenter systématiquement sont :</p>
+      <ul>
+        <li><strong>Horodatage des événements</strong> : à quelle minute une aide a été donnée, à quel moment une relance a été faite — le contexte temporel est nécessaire pour retrouver le passage en cas de revue de l'enregistrement</li>
+        <li><strong>Formulation exacte des relances</strong> : noter mot pour mot ce que le modérateur a dit, pour évaluer lors du débrief si la relance était neutre ou orientée</li>
+        <li><strong>Comportements non verbaux du modérateur</strong> : geste, regard, sourire, posture — même ceux qui semblent anodins peuvent avoir influencé le participant</li>
+        <li><strong>Durée des silences et réaction du modérateur</strong> : est-il intervenu immédiatement ou a-t-il laissé le participant trouver seul ? Si intervention : était-elle nécessaire à ce stade ?</li>
       </ul>
       <div class="example-card">
-        <strong style="color:#fcd34d;">Pourquoi un débrief entre les rounds ?</strong><br>
-        Corriger une erreur de modération immédiatement après l'avoir observée (et non en fin de séance) permet de la travailler concrètement dès le round suivant, plutôt que de l'accumuler sans retour.
+        <strong style="color:#fcd34d;">Pourquoi horodater ?</strong><br>
+        Un débrief post-session est beaucoup plus efficace quand les observations sont rattachées à des moments précis : cela permet de revenir sur le passage exact de la vidéo ou du script, et d'avoir une discussion ancrée dans les faits plutôt que dans les impressions.
       </div>
 
-      <div class="subsection-title">2.4 — Que noter en tant qu'observateur ?</div>
-      <div class="famille-tags"><span class="tag f4">Pratique</span></div>
-      <p>L'observateur ne se contente pas de "regarder" : il documente des éléments précis, réutilisables lors du débrief :</p>
-      <ul>
-        <li><strong>Moments de silence</strong> : durée approximative, et si le modérateur est intervenu trop tôt ou a bien laissé le temps</li>
-        <li><strong>Relances</strong> : formulation exacte utilisée, neutre ou orientée</li>
-        <li><strong>Réactions non verbales</strong> du modérateur (visibles ou audibles) pendant que le participant agit</li>
-        <li><strong>Aide apportée</strong> : à quel moment, et si la tâche aurait pu se poursuivre sans elle</li>
-      </ul>
-
-      <div class="subsection-title">2.5 — Synthèse individuelle des biais observés</div>
+      <div class="subsection-title">2.5 — La pratique réflexive du modérateur</div>
       <div class="famille-tags"><span class="tag f5">Réflexivité</span></div>
-      <p>À la fin des rounds, chaque étudiant formalise une courte synthèse personnelle : quels biais a-t-il commis en tant que modérateur, lesquels a-t-il observés chez les autres, et surtout — comment les corriger lors d'une prochaine session ?</p>
+      <p>La <strong>pratique réflexive</strong> désigne la capacité à analyser son propre comportement après une session, à identifier les décisions prises — et leurs conséquences sur la qualité des données collectées. C'est une compétence centrale en recherche utilisateur : un modérateur qui ne revient jamais sur ses sessions reproduit ses erreurs indéfiniment.</p>
+      <p>Cette réflexivité s'appuie sur trois questions systématiques à poser après chaque session animée :</p>
+      <ul>
+        <li><em>La neutralité a-t-elle été maintenue sur l'ensemble de la durée, ou y a-t-il eu des moments de dérive identifiables ?</em></li>
+        <li><em>Les données collectées reflètent-elles le comportement naturel du participant, ou ont-elles pu être influencées par des interventions de l'animateur ?</em></li>
+        <li><em>Qu'est-ce qui serait fait différemment lors de la prochaine session, et pourquoi ?</em></li>
+      </ul>
+      <p>Le débrief post-session — qu'il soit individuel ou collectif — est le principal levier d'amélioration. Corriger une erreur de modération immédiatement après l'avoir identifiée est beaucoup plus efficace que d'attendre une prochaine opportunité sans retour intermédiaire.</p>
       <div class="example-card">
         <strong style="color:#c4b5fd;">📌 À retenir</strong><br>
-        La posture du modérateur ne s'acquiert pas en lisant une liste de bonnes pratiques, mais par la répétition et le retour sur ses propres erreurs. Le jeu de rôle en rotation sert précisément cet objectif avant la conduite de tests réels en séance 5.
+        La posture du modérateur ne s'acquiert pas uniquement en lisant des principes — elle se construit par l'alternance entre pratique et analyse rétrospective. C'est cette boucle répétée qui transforme une connaissance théorique des biais en réflexe opérationnel pendant la session.
       </div>
     </div>
   </div>
@@ -422,7 +438,7 @@ footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:2rem 1rem;b
   <!-- QCM 2 -->
   <div class="panel" id="qcm2">
     <div class="card">
-      <div class="section-title"><span class="icon-bg icon-green">📝</span>QCM 2 — Erreurs de modération et jeu de rôle</div>
+      <div class="section-title"><span class="icon-bg icon-green">📝</span>QCM 2 — Analyser et corriger les erreurs de modération</div>
       <div class="progress-track"><div class="progress-fill" id="progress-qcm2" style="width:0%"></div></div>
       <div class="quiz-meta">
         <span id="qcm2-counter">Question 1 / 6</span>
@@ -541,67 +557,67 @@ const qcm1Data = [
   }
 ];
 
-// QCM 2 — Chapitre 2 : Identifier les erreurs de modération et jeu de rôle
+// QCM 2 — Chapitre 2 : Analyser et corriger les erreurs de modération
 const qcm2Data = [
   {
-    q: "Dans une session encadrée à trois rôles, l'observateur a pour mission de :",
+    q: "Dans une session de test, le rôle de l'observateur est de :",
     options: [
       { text: "Aider le participant si le modérateur n'intervient pas assez vite", correct: false },
-      { text: "Noter les biais de modération, silences et réactions non verbales sans intervenir", correct: true },
-      { text: "Remplacer le modérateur en cas d'erreur", correct: false },
-      { text: "Évaluer la performance du participant sur les tâches", correct: false }
+      { text: "Documenter les biais de modération, silences et réactions non verbales sans intervenir", correct: true },
+      { text: "Remplacer le modérateur en cas d'erreur pendant la session", correct: false },
+      { text: "Évaluer la performance du participant sur chaque tâche", correct: false }
     ],
-    explanation: "L'observateur documente le déroulé de la session pour nourrir le débrief, sans jamais intervenir pendant le round."
+    explanation: "L'observateur documente le déroulé de la session pour nourrir le débrief post-session, sans jamais intervenir pendant que la session se déroule."
   },
   {
-    q: "Visionner une session filmée avant le jeu de rôle permet principalement de :",
+    q: "Analyser une session de test filmée permet principalement de :",
     options: [
-      { text: "Remplacer la rédaction du script", correct: false },
-      { text: "Identifier collectivement les erreurs de modération sans pression avant de les vivre soi-même", correct: true },
+      { text: "Remplacer la rédaction du script de test", correct: false },
+      { text: "Identifier les erreurs de modération à tête reposée, sans la pression du temps réel", correct: true },
       { text: "Déterminer la taille de l'échantillon à recruter", correct: false },
       { text: "Calculer le score SUS du produit", correct: false }
     ],
-    explanation: "Observer une session filmée à tête reposée prépare les étudiants à reconnaître les mêmes signaux pendant leur propre jeu de rôle."
+    explanation: "Contrairement à l'observation en direct, l'analyse d'un enregistrement permet de revenir en arrière, de mettre en pause et de confronter les lectures de plusieurs observateurs."
   },
   {
-    q: "Dans le déroulé en rounds, le débrief intermédiaire a pour objectif de :",
+    q: "Un modérateur qui dit \"très bien\" ou \"exactement\" après une action du participant commet :",
     options: [
-      { text: "Noter une évaluation chiffrée de chaque étudiant", correct: false },
-      { text: "Permettre de corriger les erreurs observées avant le round suivant", correct: true },
-      { text: "Remplacer le round 3", correct: false },
-      { text: "Décider qui jouera le rôle de modérateur au round suivant uniquement", correct: false }
+      { text: "Une reformulation de consigne", correct: false },
+      { text: "Un encouragement implicite qui oriente le comportement du participant", correct: true },
+      { text: "Une relance neutre conforme au protocole think-aloud", correct: false },
+      { text: "Une aide prématurée sur la tâche en cours", correct: false }
     ],
-    explanation: "Le débrief intermédiaire sert à ajuster la pratique immédiatement, plutôt que d'accumuler les erreurs jusqu'en fin de séance."
+    explanation: "Ces formules signalent implicitement que le chemin emprunté est correct, orientant ainsi la suite du comportement — ce qui constitue un biais de modération."
   },
   {
-    q: "La rotation des rôles entre les rounds permet à chaque étudiant de :",
+    q: "Occuper successivement les positions de modérateur, participant et observateur lors d'une simulation permet de :",
     options: [
-      { text: "Éviter de jouer le rôle de modérateur", correct: false },
-      { text: "Vivre la session depuis plusieurs positions et mieux repérer les biais de modération", correct: true },
-      { text: "Choisir le profil de participant le plus proche du sien", correct: false },
-      { text: "Réduire la durée totale du jeu de rôle", correct: false }
+      { text: "Éviter d'avoir à animer des sessions réelles par la suite", correct: false },
+      { text: "Percevoir les biais de modération depuis plusieurs angles et mieux les reconnaître", correct: true },
+      { text: "Choisir le profil de participant le plus représentatif de la cible", correct: false },
+      { text: "Réduire la durée totale du protocole de test", correct: false }
     ],
-    explanation: "Occuper successivement les trois rôles aide à reconnaître les biais qu'on a soi-même commis ou observés."
+    explanation: "Chaque position produit un type d'information différent — on identifie beaucoup mieux les biais qu'on a soi-même commis ou observés de l'intérieur."
   },
   {
-    q: "Lorsqu'un modérateur apporte de l'aide dès la première hésitation du participant, cela illustre :",
+    q: "Lorsqu'un modérateur intervient dès la première hésitation du participant, cela illustre :",
     options: [
       { text: "Une bonne pratique de relance neutre", correct: false },
-      { text: "Une aide prématurée empêchant d'observer comment le participant aurait résolu seul la difficulté", correct: true },
+      { text: "Une aide prématurée qui prive la session d'une donnée sur la capacité du participant à résoudre seul la difficulté", correct: true },
       { text: "Le protocole think-aloud correctement appliqué", correct: false },
-      { text: "Une question post-test standard", correct: false }
+      { text: "L'effet de désirabilité sociale", correct: false }
     ],
-    explanation: "Intervenir trop tôt prive la session d'une information clé : le participant aurait-il pu résoudre la difficulté seul ?"
+    explanation: "Intervenir trop tôt empêche de savoir si le participant aurait pu trouver seul — cette information est définitivement perdue une fois l'aide donnée."
   },
   {
-    q: "La synthèse individuelle réalisée en fin de séance vise à :",
+    q: "La pratique réflexive du modérateur après une session consiste à :",
     options: [
-      { text: "Calculer le score SUS de la session", correct: false },
-      { text: "Formaliser les biais commis ou observés et réfléchir à comment les corriger pour les sessions réelles", correct: true },
-      { text: "Définir les critères de recrutement de la séance suivante", correct: false },
-      { text: "Remplacer le débrief intermédiaire", correct: false }
+      { text: "Calculer le score SUS moyen de la session", correct: false },
+      { text: "Analyser son propre comportement pour identifier les dérives et améliorer les sessions suivantes", correct: true },
+      { text: "Définir les critères de recrutement pour le prochain test", correct: false },
+      { text: "Rédiger un nouveau script en remplaçant toutes les tâches", correct: false }
     ],
-    explanation: "Cette synthèse réflexive prépare les étudiants à la conduite de tests réels en séance 5, en capitalisant sur leurs propres erreurs observées."
+    explanation: "La réflexivité — analyser ses propres décisions et leurs conséquences — est le principal levier d'amélioration de la posture de modérateur sur la durée."
   }
 ];
 
