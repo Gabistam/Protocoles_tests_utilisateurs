@@ -2,493 +2,610 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>GoalDelivery — Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoalDelivery — Livraison avant le coup d'envoi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 <style>
 
-/* ============================================================
+/* =============================================================
    RESET & BASE
-   ============================================================ */
+   ============================================================= */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-  height: 100%;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-}
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #0a0a0a;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  overflow-x: hidden;
-}
-
-/* ============================================================
-   DEVICE SHELL
-   ============================================================ */
-.device {
-  width: 390px;
-  min-height: 844px;
-  background: #f5f5f5;
-  border-radius: 52px;
-  overflow: hidden;
-  position: relative;
-  box-shadow:
-    0 0 0 10px #1c1c1e,
-    0 0 0 12px #333,
-    0 40px 80px rgba(0,0,0,0.8);
-}
-
-/* Status bar */
-.status-bar {
-  background: #1c1c1e;
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 28px 8px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* ============================================================
-   SCREENS — anchor-based navigation
-   ============================================================ */
-.screens {
-  position: relative;
-}
-
-.screen {
-  display: none;
-  flex-direction: column;
-  min-height: 780px;
-  background: #f5f5f5;
-  overflow-y: auto;
-}
-
-/* Show screen based on URL hash */
-.screen:target { display: flex; }
-#screen-1 { display: flex; } /* default */
-
-/* When another screen is targeted, hide screen-1 */
-#screen-2:target ~ #screen-1,
-#screen-3:target ~ #screen-1,
-#screen-4:target ~ #screen-1,
-#screen-5:target ~ #screen-1 { display: none; }
-
-/* Also need to show targeted screen when hash changes */
-#screen-2:target { display: flex; }
-#screen-3:target { display: flex; }
-#screen-4:target { display: flex; }
-#screen-5:target { display: flex; }
-
-/* ============================================================
-   COMMON UI COMPONENTS
-   ============================================================ */
-
-/* Top nav bar */
-.topbar {
   background: #fff;
-  padding: 14px 20px 12px;
+  color: #1c1c1e;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+
+/* =============================================================
+   PAGES — anchor-based navigation for Maze
+   ============================================================= */
+.page {
+  display: none;
+  min-height: 100vh;
+  flex-direction: column;
+}
+.page.active { display: flex; }
+
+/* =============================================================
+   NAV
+   ============================================================= */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #1c1c1e;
+  letter-spacing: -0.5px;
+}
+
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  background: #16a34a;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+.nav-logo span { color: #16a34a; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: #525252;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover { color: #1c1c1e; }
+
+.nav-cta {
   display: flex;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid #e5e5e5;
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 
-.topbar-back {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: #f0f0f0;
-  display: flex; align-items: center; justify-content: center;
-  text-decoration: none;
+.btn-nav {
+  padding: 9px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-nav-ghost {
+  background: transparent;
   color: #1c1c1e;
-  font-size: 16px;
-  flex-shrink: 0;
+  border: 1.5px solid #e5e5e5;
 }
 
-.topbar-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1c1c1e;
-  flex: 1;
-}
-
-/* COUNTDOWN BADGE — signature element */
-.countdown-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.3px;
-}
-
-.countdown-badge.green {
-  background: #dcfce7;
-  color: #15803d;
-  border: 1.5px solid #86efac;
-}
-
-.countdown-badge.orange {
-  background: #fff7ed;
-  color: #c2410c;
-  border: 1.5px solid #fdba74;
-  animation: pulse-orange 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-orange {
-  0%, 100% { background: #fff7ed; }
-  50% { background: #ffedd5; }
-}
-
-.badge-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.green .badge-dot { background: #16a34a; }
-.orange .badge-dot { background: #f97316; }
-
-/* Scroll content area */
-.scroll-content {
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 24px;
-}
-
-/* CTA button */
-.btn-primary {
-  display: block;
-  width: 100%;
-  padding: 16px;
+.btn-nav-primary {
   background: #16a34a;
   color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  border-radius: 14px;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.15s;
-  margin-top: auto;
 }
 
-.btn-primary:active { background: #15803d; }
+.btn-nav-primary:hover { background: #15803d; }
 
-.btn-secondary {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  background: #fff;
-  color: #1c1c1e;
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  border: 1.5px solid #e5e5e5;
-  border-radius: 14px;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-/* ============================================================
-   SCREEN 1 — ACCUEIL
-   ============================================================ */
-
-.home-hero {
+/* =============================================================
+   MATCH TICKER — persistent bar
+   ============================================================= */
+.match-ticker {
   background: #1c1c1e;
-  padding: 28px 20px 24px;
-  position: relative;
-  overflow: hidden;
+  padding: 10px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  flex-wrap: wrap;
 }
 
-.home-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at top right, rgba(22,163,74,0.3) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-.home-logo {
+.ticker-match {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 22px;
 }
 
-.logo-icon {
-  width: 40px; height: 40px;
+.ticker-flag { font-size: 18px; }
+
+.ticker-score {
+  background: rgba(255,255,255,0.1);
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.2);
+}
+
+.ticker-countdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-countdown.green {
   background: #16a34a;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-}
-
-.logo-name {
-  font-size: 22px;
-  font-weight: 900;
   color: #fff;
-  letter-spacing: -0.5px;
 }
 
-.logo-name span { color: #4ade80; }
-
-.home-headline {
-  font-size: 26px;
-  font-weight: 800;
+.ticker-countdown.orange {
+  background: #f97316;
   color: #fff;
-  line-height: 1.25;
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
+  animation: pulse-bg 1.5s ease-in-out infinite;
 }
 
-.home-sub {
-  font-size: 14px;
-  color: #a3a3a3;
-  margin-bottom: 20px;
-  line-height: 1.5;
+@keyframes pulse-bg {
+  0%, 100% { background: #f97316; }
+  50% { background: #ea580c; }
 }
 
-.home-match-pill {
+/* =============================================================
+   BUTTONS
+   ============================================================= */
+.btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 999px;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-}
-
-.home-section {
-  padding: 20px 20px 0;
-}
-
-.home-section-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: #1c1c1e;
-  margin-bottom: 14px;
-}
-
-.search-bar {
-  background: #fff;
-  border: 1.5px solid #e5e5e5;
-  border-radius: 14px;
-  padding: 13px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  text-decoration: none;
-}
-
-.search-icon { font-size: 16px; color: #a3a3a3; }
-
-.search-placeholder {
+  padding: 14px 28px;
+  border-radius: 12px;
   font-size: 15px;
-  color: #a3a3a3;
-  font-weight: 400;
-}
-
-/* Category chips */
-.categories {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  margin-bottom: 20px;
-  scrollbar-width: none;
-}
-.categories::-webkit-scrollbar { display: none; }
-
-.cat-chip {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  font-family: 'Inter', sans-serif;
   text-decoration: none;
-  border: 1.5px solid #e5e5e5;
+}
+
+.btn-green {
+  background: #16a34a;
+  color: #fff;
+}
+.btn-green:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(22,163,74,0.3); }
+
+.btn-outline {
+  background: transparent;
+  color: #1c1c1e;
+  border: 2px solid #e5e5e5;
+}
+.btn-outline:hover { border-color: #1c1c1e; }
+
+.btn-white {
   background: #fff;
   color: #1c1c1e;
-  white-space: nowrap;
 }
+.btn-white:hover { background: #f5f5f5; }
 
-.cat-chip.active {
-  background: #1c1c1e;
-  color: #fff;
-  border-color: #1c1c1e;
-}
-
-/* Highlight card */
-.highlight-card {
-  background: #fff;
-  border-radius: 18px;
-  overflow: hidden;
-  margin-bottom: 14px;
-  text-decoration: none;
-  display: block;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-
-.highlight-img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  display: block;
-  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 56px;
-}
-
-.highlight-body {
-  padding: 14px 16px 16px;
-}
-
-.highlight-tag {
-  display: inline-block;
-  background: #dcfce7;
-  color: #15803d;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
-}
-
-.highlight-name {
+.btn-lg {
+  padding: 18px 36px;
   font-size: 16px;
-  font-weight: 700;
-  color: #1c1c1e;
-  margin-bottom: 4px;
+  border-radius: 14px;
 }
 
-.highlight-meta {
-  font-size: 13px;
-  color: #737373;
+.btn-block {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+}
+
+/* =============================================================
+   PAGE 1 — ACCUEIL / VITRINE
+   ============================================================= */
+
+/* HERO */
+.hero {
+  background: #0a0a0a;
+  position: relative;
+  overflow: hidden;
+  padding: 80px 80px 100px;
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: 60px;
+  align-items: center;
+  min-height: 560px;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(22,163,74,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(22,163,74,0.15);
+  border: 1px solid rgba(22,163,74,0.3);
+  color: #4ade80;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 24px;
+}
+
+.hero-title {
+  font-size: clamp(38px, 4vw, 58px);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.08;
+  letter-spacing: -1.5px;
+  margin-bottom: 20px;
+}
+
+.hero-title .accent { color: #4ade80; }
+
+.hero-sub {
+  font-size: 17px;
+  color: #a3a3a3;
+  line-height: 1.65;
+  margin-bottom: 36px;
+  max-width: 480px;
+}
+
+.hero-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
+  margin-bottom: 48px;
 }
 
-.highlight-price {
-  font-weight: 700;
-  color: #1c1c1e;
-}
-
-.home-cta-wrap {
-  padding: 0 20px 20px;
-}
-
-/* ============================================================
-   SCREEN 2 — RÉSULTATS RECHERCHE
-   ============================================================ */
-
-.filter-bar {
-  background: #fff;
-  padding: 12px 20px;
+.hero-stats {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  border-bottom: 1px solid #e5e5e5;
-  scrollbar-width: none;
+  gap: 36px;
 }
-.filter-bar::-webkit-scrollbar { display: none; }
 
-.filter-chip {
-  flex-shrink: 0;
-  padding: 7px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  border: 1.5px solid #e5e5e5;
-  background: #fff;
-  color: #1c1c1e;
-  white-space: nowrap;
-  text-decoration: none;
+.hero-stat-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
   display: block;
 }
 
-.filter-chip.active {
-  background: #1c1c1e;
-  color: #fff;
-  border-color: #1c1c1e;
-}
-
-.results-label {
-  padding: 14px 20px 6px;
-  font-size: 13px;
+.hero-stat-label {
+  font-size: 12px;
   color: #737373;
   font-weight: 500;
 }
 
-/* Menu list card */
-.menu-card {
-  background: #fff;
-  margin: 0 16px 12px;
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  text-decoration: none;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+/* Hero visual */
+.hero-visual {
+  position: relative;
 }
 
-.menu-card-emoji {
-  width: 90px;
-  min-height: 90px;
+.hero-card {
+  background: #1c1c1e;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #333;
+}
+
+.hero-card-match {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 40px;
-  flex-shrink: 0;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
-.menu-card-body {
-  flex: 1;
-  padding: 12px 14px 12px 0;
+.hero-card-flag-group {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-card-flag {
+  font-size: 28px;
+}
+
+.hero-card-vs {
+  font-size: 12px;
+  font-weight: 700;
+  color: #525252;
+  padding: 4px 8px;
+  background: #2a2a2a;
+  border-radius: 6px;
+}
+
+.hero-card-score {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-countdown-wrap {
+  background: #111;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 }
 
-.menu-card-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1c1c1e;
-  margin-bottom: 3px;
-}
-
-.menu-card-sub {
+.hero-countdown-label {
   font-size: 12px;
   color: #737373;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.hero-countdown-time {
+  font-size: 32px;
+  font-weight: 900;
+  color: #4ade80;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1px;
+}
+
+.hero-countdown-icon { font-size: 36px; }
+
+.hero-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #111;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.hero-menu-emoji {
+  width: 44px; height: 44px;
+  background: #2a2a2a;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.hero-menu-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  flex: 1;
+}
+
+.hero-menu-meta {
+  font-size: 12px;
+  color: #737373;
+}
+
+.hero-menu-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.hero-badge-delivery {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(22,163,74,0.1);
+  border: 1px solid rgba(22,163,74,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4ade80;
+  margin-top: 4px;
+}
+
+/* HOW IT WORKS */
+.how-section {
+  padding: 80px 80px;
+  background: #f9f9f9;
+}
+
+.section-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 900;
+  color: #1c1c1e;
+  letter-spacing: -0.8px;
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  font-size: 16px;
+  color: #737373;
+  max-width: 520px;
+  line-height: 1.65;
+  margin-bottom: 56px;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.step-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 24px;
+  border: 1px solid #f0f0f0;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+
+.step-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+
+.step-num {
+  width: 40px; height: 40px;
+  background: #16a34a;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 18px;
+}
+
+.step-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1c1e;
   margin-bottom: 8px;
-  line-height: 1.4;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: #737373;
+  line-height: 1.6;
+}
+
+.step-connector {
+  position: absolute;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #d4d4d4;
+  z-index: 1;
+}
+
+/* MENU SECTION */
+.menu-section {
+  padding: 80px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.menu-card {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  background: #fff;
+}
+
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+  border-color: #e5e5e5;
+}
+
+.menu-card-img {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  position: relative;
+}
+
+.menu-card-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.menu-card-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.menu-card-body {
+  padding: 20px;
+}
+
+.menu-card-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1c1c1e;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+
+.menu-card-desc {
+  font-size: 13px;
+  color: #737373;
+  margin-bottom: 16px;
+  line-height: 1.5;
 }
 
 .menu-card-footer {
@@ -498,305 +615,537 @@ body {
 }
 
 .menu-card-price {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 900;
   color: #1c1c1e;
+  letter-spacing: -0.5px;
+}
+
+.menu-card-price span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #737373;
 }
 
 .menu-card-time {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* SOCIAL PROOF */
+.proof-section {
+  background: #f9f9f9;
+  padding: 64px 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.proof-title {
+  font-size: clamp(26px, 2.5vw, 36px);
+  font-weight: 900;
+  color: #1c1c1e;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+
+.proof-sub {
+  font-size: 15px;
+  color: #737373;
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+
+.proof-stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.proof-stat {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #f0f0f0;
+}
+
+.proof-stat-val {
+  font-size: 30px;
+  font-weight: 900;
+  color: #16a34a;
+  letter-spacing: -0.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.proof-stat-label {
+  font-size: 13px;
+  color: #737373;
+  font-weight: 500;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  border: 1px solid #f0f0f0;
+}
+
+.review-stars {
+  color: #f59e0b;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.review-text {
+  font-size: 14px;
+  color: #404040;
+  line-height: 1.55;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.review-author {
+  font-size: 12px;
+  color: #737373;
+  font-weight: 600;
+}
+
+/* CTA SECTION */
+.cta-section {
+  background: #16a34a;
+  padding: 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '⚽';
+  position: absolute;
+  font-size: 300px;
+  opacity: 0.06;
+  top: -60px;
+  right: -40px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.cta-title {
+  font-size: clamp(30px, 3.5vw, 48px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -1px;
+  margin-bottom: 14px;
+}
+
+.cta-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 32px;
+}
+
+/* FOOTER */
+footer {
+  background: #0a0a0a;
+  padding: 48px 80px 32px;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #1c1c1e;
+  margin-bottom: 28px;
+}
+
+.footer-brand p {
+  font-size: 13px;
+  color: #525252;
+  line-height: 1.6;
+  margin-top: 12px;
+  max-width: 260px;
+}
+
+.footer-col-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #737373;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links a {
+  font-size: 14px;
+  color: #525252;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: #fff; }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #525252;
+}
+
+/* =============================================================
+   PAGE 2 — MENU / CATALOGUE
+   ============================================================= */
+
+.catalog-hero {
+  background: #f5f5f5;
+  padding: 48px 80px 40px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.catalog-hero h1 {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.7px;
+  margin-bottom: 8px;
+}
+
+.catalog-hero p {
+  font-size: 15px;
+  color: #737373;
+}
+
+.catalog-filters {
+  padding: 20px 80px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+}
+
+.filter-chip {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid #e5e5e5;
+  background: #fff;
+  color: #1c1c1e;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.filter-chip.active {
+  background: #1c1c1e;
+  color: #fff;
+  border-color: #1c1c1e;
+}
+
+.catalog-body {
+  padding: 40px 80px 60px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+}
+
+.catalog-sidebar {
+  position: sticky;
+  top: 130px;
+  align-self: start;
+}
+
+.sidebar-card {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+}
+
+.sidebar-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin-bottom: 14px;
+}
+
+.sidebar-match {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.sidebar-flags { font-size: 22px; letter-spacing: 2px; }
+
+.sidebar-match-info {
+  flex: 1;
+}
+
+.sidebar-match-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin-bottom: 2px;
+}
+
+.sidebar-match-time {
+  font-size: 12px;
+  color: #737373;
+}
+
+.sidebar-countdown {
+  background: #dcfce7;
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.sidebar-countdown-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: #15803d;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.sidebar-countdown-label {
   font-size: 12px;
   color: #16a34a;
   font-weight: 600;
 }
 
-.recommended-badge {
-  background: #fef08a;
-  color: #854d0e;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 6px;
-  display: inline-block;
-  margin-bottom: 4px;
+.catalog-results {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
-/* ============================================================
-   SCREEN 3 — FICHE MENU
-   ============================================================ */
+/* =============================================================
+   PAGE 3 — FICHE PRODUIT
+   ============================================================= */
 
-.menu-hero-emoji {
+.fiche-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 0;
+  flex: 1;
+}
+
+.fiche-left {
+  padding: 48px 60px;
+  border-right: 1px solid #f0f0f0;
+}
+
+.fiche-breadcrumb {
+  font-size: 13px;
+  color: #737373;
+  margin-bottom: 24px;
+}
+
+.fiche-breadcrumb span { color: #1c1c1e; font-weight: 600; }
+
+.fiche-emoji-hero {
   width: 100%;
-  height: 200px;
-  background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+  height: 280px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 80px;
-  position: relative;
+  font-size: 100px;
+  margin-bottom: 32px;
 }
 
-.menu-hero-tag {
-  position: absolute;
-  bottom: 14px;
-  left: 16px;
-  background: rgba(0,0,0,0.6);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 8px;
-}
-
-.fiche-body {
-  background: #fff;
-  padding: 20px;
-}
-
-.fiche-name {
-  font-size: 22px;
-  font-weight: 800;
+.fiche-title {
+  font-size: 32px;
+  font-weight: 900;
   color: #1c1c1e;
+  letter-spacing: -0.7px;
   margin-bottom: 6px;
-  letter-spacing: -0.4px;
 }
 
-.fiche-resto {
-  font-size: 14px;
+.fiche-subtitle {
+  font-size: 15px;
   color: #737373;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
-.fiche-stats {
+.fiche-meta-row {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
 }
 
-.stat-pill {
-  flex: 1;
+.fiche-meta-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
   background: #f5f5f5;
-  border-radius: 12px;
-  padding: 10px 12px;
-  text-align: center;
-}
-
-.stat-pill-val {
-  font-size: 16px;
-  font-weight: 800;
-  color: #1c1c1e;
-  display: block;
-  margin-bottom: 2px;
-}
-
-.stat-pill-label {
-  font-size: 11px;
-  color: #737373;
-  font-weight: 500;
-}
-
-.fiche-divider {
-  height: 1px;
-  background: #f0f0f0;
-  margin: 16px 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #404040;
 }
 
 .fiche-section-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: #1c1c1e;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  margin-top: 28px;
+}
+
+.fiche-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .fiche-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 14px;
+  background: #f9f9f9;
+  border-radius: 12px;
 }
-
-.fiche-item:last-child { border-bottom: none; }
 
 .fiche-item-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
   background: #16a34a;
   flex-shrink: 0;
-  margin-top: 5px;
 }
 
-.fiche-item-text {
+.fiche-item-name {
   font-size: 14px;
   color: #404040;
-  line-height: 1.4;
+  flex: 1;
 }
 
 .fiche-item-qty {
   font-size: 13px;
   color: #737373;
-  margin-left: auto;
-  flex-shrink: 0;
-  padding-top: 1px;
+  font-weight: 500;
 }
 
-.fiche-price-row {
+.fiche-reviews {
+  margin-top: 28px;
+}
+
+.review-row {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-top: 16px;
-}
-
-.fiche-price-big {
-  font-size: 28px;
-  font-weight: 900;
-  color: #1c1c1e;
-  letter-spacing: -0.5px;
-}
-
-.fiche-price-sub {
-  font-size: 13px;
-  color: #737373;
-}
-
-.fiche-cta-wrap {
-  padding: 16px 20px 28px;
-  background: #fff;
-  border-top: 1px solid #f0f0f0;
-}
-
-/* ============================================================
-   SCREEN 4 — PANIER (badge vert)
-   ============================================================ */
-
-.cart-header {
-  background: #fff;
-  padding: 16px 20px;
+  gap: 14px;
+  padding: 14px 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.cart-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: #1c1c1e;
-  margin-bottom: 4px;
-}
-
-.cart-subtitle {
-  font-size: 13px;
-  color: #737373;
-}
-
-.cart-badge-section {
-  padding: 14px 20px;
-  background: #fff;
-  margin-bottom: 8px;
-}
-
-.cart-badge-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #737373;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-
-.countdown-badge-large {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.countdown-badge-large.green {
-  background: #f0fdf4;
-  border: 2px solid #86efac;
-  color: #15803d;
-}
-
-.countdown-badge-large .cbd-icon {
-  font-size: 22px;
+.review-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
-.countdown-badge-large .cbd-text { flex: 1; }
-.countdown-badge-large .cbd-title { font-size: 14px; font-weight: 700; }
-.countdown-badge-large .cbd-sub { font-size: 12px; font-weight: 500; opacity: 0.75; }
-.countdown-badge-large .cbd-time {
-  font-size: 18px;
+/* FICHE RIGHT — sticky order panel */
+.fiche-right {
+  padding: 32px 32px;
+  position: sticky;
+  top: 64px;
+  align-self: start;
+}
+
+.order-panel {
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.order-price {
+  font-size: 36px;
   font-weight: 900;
+  color: #1c1c1e;
+  letter-spacing: -0.8px;
+  margin-bottom: 4px;
+}
+
+.order-price-sub {
+  font-size: 13px;
+  color: #737373;
+  margin-bottom: 20px;
+}
+
+.order-countdown {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.order-countdown-top {
+  font-size: 12px;
+  font-weight: 600;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.order-countdown-val {
+  font-size: 24px;
+  font-weight: 900;
+  color: #15803d;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.5px;
 }
 
-.cart-items-section {
-  background: #fff;
-  padding: 16px 20px;
-  margin-bottom: 8px;
+.order-countdown-sub {
+  font-size: 12px;
+  color: #16a34a;
+  margin-top: 2px;
 }
 
-.cart-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f5f5f5;
-}
-
-.cart-item:last-child { border-bottom: none; }
-
-.cart-item-emoji {
-  width: 52px; height: 52px;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
-  flex-shrink: 0;
-}
-
-.cart-item-info { flex: 1; }
-.cart-item-name { font-size: 15px; font-weight: 600; color: #1c1c1e; margin-bottom: 2px; }
-.cart-item-sub { font-size: 12px; color: #737373; }
-
-.qty-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.qty-btn {
-  width: 28px; height: 28px;
-  border-radius: 50%;
+.order-divider {
+  height: 1px;
   background: #f0f0f0;
-  border: none;
-  font-size: 16px;
-  font-weight: 700;
-  color: #1c1c1e;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
+  margin: 16px 0;
 }
 
-.qty-val {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1c1c1e;
-  min-width: 16px;
-  text-align: center;
-}
-
-.cart-total-section {
-  background: #fff;
-  padding: 16px 20px;
-  margin-bottom: 8px;
-}
-
-.cart-total-row {
+.order-row {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
@@ -804,32 +1153,109 @@ body {
   margin-bottom: 8px;
 }
 
-.cart-total-row.total {
-  font-size: 16px;
+.order-row.total {
+  font-size: 15px;
   font-weight: 700;
   color: #1c1c1e;
-  padding-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1.5px solid #f0f0f0;
 }
 
-.cart-cta-wrap {
-  padding: 0 20px 28px;
+.order-row .green { color: #16a34a; font-weight: 600; }
+
+.qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.qty-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.qty-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 4px 8px;
+}
+
+.qty-btn {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: none;
   background: #fff;
-  border-top: 1px solid #f0f0f0;
-  position: sticky;
-  bottom: 0;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  color: #1c1c1e;
 }
 
-.cart-cta-wrap .btn-primary { margin-top: 14px; }
+.qty-val {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+}
 
-/* ============================================================
-   SCREEN 5 — PANIER (badge orange — risque retard)
-   ============================================================ */
+/* =============================================================
+   PAGE 4 — PANIER
+   ============================================================= */
 
-.countdown-badge-large.orange {
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 0;
+  flex: 1;
+  align-items: start;
+}
+
+.cart-left {
+  padding: 48px 60px;
+  border-right: 1px solid #f0f0f0;
+}
+
+.cart-page-title {
+  font-size: 30px;
+  font-weight: 900;
+  color: #1c1c1e;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.cart-page-sub {
+  font-size: 14px;
+  color: #737373;
+  margin-bottom: 28px;
+}
+
+/* countdown alert — orange version for cart */
+.cart-alert {
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border: 2px solid;
+}
+
+.cart-alert.ok {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.cart-alert.warn {
   background: #fff7ed;
-  border: 2px solid #fdba74;
-  color: #c2410c;
+  border-color: #fdba74;
   animation: pulse-border 1.5s ease-in-out infinite;
 }
 
@@ -838,581 +1264,978 @@ body {
   50% { border-color: #f97316; }
 }
 
-.warning-banner {
-  background: #fff7ed;
-  border: 1.5px solid #fdba74;
-  border-radius: 14px;
-  padding: 14px 16px;
-  margin: 0 20px 12px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
+.cart-alert-icon { font-size: 24px; flex-shrink: 0; margin-top: 1px; }
 
-.warning-banner-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.warning-banner-title {
-  font-size: 14px;
+.cart-alert-title {
+  font-size: 15px;
   font-weight: 700;
-  color: #c2410c;
   margin-bottom: 3px;
 }
 
-.warning-banner-sub {
+.cart-alert.ok .cart-alert-title { color: #15803d; }
+.cart-alert.warn .cart-alert-title { color: #c2410c; }
+
+.cart-alert-sub {
   font-size: 13px;
-  color: #9a3412;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
-.cart-actions {
-  padding: 0 20px 28px;
-  background: #fff;
-  border-top: 1px solid #f0f0f0;
-  position: sticky;
-  bottom: 0;
+.cart-alert.ok .cart-alert-sub { color: #16a34a; }
+.cart-alert.warn .cart-alert-sub { color: #9a3412; }
+
+.cart-alert-time {
+  margin-left: auto;
+  font-size: 28px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+  align-self: center;
 }
 
-.cart-actions .btn-primary { margin-top: 14px; margin-bottom: 10px; }
+.cart-alert.ok .cart-alert-time { color: #15803d; }
+.cart-alert.warn .cart-alert-time { color: #f97316; }
 
-/* ============================================================
-   SCREEN 6 — CONFIRMATION
-   ============================================================ */
-
-.confirmation-wrap {
-  flex: 1;
+.cart-items {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 28px;
-  background: #fff;
-  text-align: center;
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
-.confirmation-icon {
-  width: 80px; height: 80px;
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #f9f9f9;
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+}
+
+.cart-item-emoji {
+  width: 64px; height: 64px;
+  background: #fff;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  border: 1px solid #f0f0f0;
+}
+
+.cart-item-info { flex: 1; }
+
+.cart-item-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin-bottom: 3px;
+}
+
+.cart-item-sub {
+  font-size: 13px;
+  color: #737373;
+}
+
+.cart-item-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1c1c1e;
+}
+
+.cart-right {
+  padding: 48px 40px;
+  position: sticky;
+  top: 64px;
+}
+
+.summary-panel {
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.summary-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin-bottom: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #737373;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.summary-row.total {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1c1c1e;
+  border-bottom: none;
+  padding-top: 12px;
+  margin-top: 4px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.summary-row .green { color: #16a34a; font-weight: 600; }
+
+.promo-row {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.promo-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  color: #1c1c1e;
+}
+
+.promo-input:focus { border-color: #16a34a; }
+
+.promo-btn {
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  color: #1c1c1e;
+}
+
+/* =============================================================
+   PAGE 5 — CONFIRMATION
+   ============================================================= */
+
+.confirm-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 80px;
+  background: #f9f9f9;
+}
+
+.confirm-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 48px;
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.06);
+}
+
+.confirm-icon {
+  width: 72px; height: 72px;
   background: #dcfce7;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 38px;
-  margin-bottom: 24px;
+  font-size: 32px;
+  margin: 0 auto 24px;
 }
 
-.confirmation-title {
-  font-size: 24px;
-  font-weight: 800;
+.confirm-title {
+  font-size: 28px;
+  font-weight: 900;
   color: #1c1c1e;
+  letter-spacing: -0.5px;
   margin-bottom: 10px;
-  letter-spacing: -0.4px;
 }
 
-.confirmation-sub {
+.confirm-sub {
   font-size: 15px;
   color: #737373;
   line-height: 1.6;
   margin-bottom: 28px;
 }
 
-.confirmation-detail {
-  background: #f5f5f5;
+.confirm-eta {
+  background: #f0fdf4;
+  border: 2px solid #86efac;
   border-radius: 16px;
-  padding: 16px 20px;
-  width: 100%;
+  padding: 20px 24px;
   margin-bottom: 24px;
-  text-align: left;
 }
 
-.confirmation-detail-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  padding: 6px 0;
-  border-bottom: 1px solid #e5e5e5;
-  color: #404040;
-}
-
-.confirmation-detail-row:last-child { border-bottom: none; }
-.confirmation-detail-row span:last-child { font-weight: 600; color: #1c1c1e; }
-
-.confirmation-eta {
-  background: #dcfce7;
-  border: 1.5px solid #86efac;
-  border-radius: 14px;
-  padding: 14px 18px;
-  width: 100%;
-  text-align: center;
-  margin-bottom: 28px;
-}
-
-.confirmation-eta-val {
-  font-size: 28px;
+.confirm-eta-val {
+  font-size: 40px;
   font-weight: 900;
   color: #15803d;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
   display: block;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
-.confirmation-eta-label {
-  font-size: 13px;
+.confirm-eta-label {
+  font-size: 14px;
   color: #16a34a;
   font-weight: 600;
 }
 
-/* ============================================================
-   RESPONSIVE — full-screen on real mobile
-   ============================================================ */
-@media (max-width: 420px) {
-  body { padding: 0; align-items: flex-start; }
-  .device {
-    width: 100%;
-    min-height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-  }
+.confirm-details {
+  background: #f9f9f9;
+  border-radius: 14px;
+  padding: 16px 20px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.confirm-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 7px 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #737373;
+}
+
+.confirm-detail-row:last-child { border-bottom: none; }
+.confirm-detail-row strong { color: #1c1c1e; font-weight: 600; }
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
 }
 
 </style>
 </head>
 <body>
 
-<div class="device">
-  <!-- Status bar -->
-  <div class="status-bar">
-    <span>21:00</span>
-    <span>⚽ GoalDelivery</span>
-    <span>🔋 87%</span>
+<!-- ============================================================
+     PAGE 1 — VITRINE / ACCUEIL
+     ============================================================ -->
+<div class="page active" id="page-1">
+
+  <nav>
+    <a href="#page-1" class="nav-logo" onclick="showPage('page-1')">
+      <div class="nav-logo-icon">⚽</div>
+      Goal<span>Delivery</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('page-2')">Menus</a></li>
+      <li><a href="#">Restaurants</a></li>
+      <li><a href="#">Comment ça marche</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav btn-nav-ghost">Se connecter</button>
+      <button class="btn-nav btn-nav-primary" onclick="showPage('page-2')">Commander</button>
+    </div>
+  </nav>
+
+  <div class="match-ticker">
+    <div class="ticker-match">
+      <span class="ticker-flag">🇫🇷</span>
+      <span>France</span>
+      <span class="ticker-score">– : –</span>
+      <span>Maroc</span>
+      <span class="ticker-flag">🇲🇦</span>
+    </div>
+    <div class="ticker-divider"></div>
+    <div class="ticker-match">
+      <span class="ticker-flag">🇧🇷</span>
+      <span>Brésil</span>
+      <span class="ticker-score">– : –</span>
+      <span>Argentine</span>
+      <span class="ticker-flag">🇦🇷</span>
+    </div>
+    <div class="ticker-divider"></div>
+    <div class="ticker-countdown green" id="ticker-cd">
+      ⚽ Prochain match dans <span id="ticker-time">1:28:00</span>
+    </div>
   </div>
 
-  <div class="screens">
-
-    <!-- ================================================
-         SCREEN 1 — ACCUEIL
-         ================================================ -->
-    <div class="screen" id="screen-1">
-      <div class="home-hero">
-        <div class="home-logo">
-          <div class="logo-icon">⚽</div>
-          <div class="logo-name">Goal<span>Delivery</span></div>
-        </div>
-        <div class="home-headline">Ce soir, régale<br>tes coéquipiers.</div>
-        <div class="home-sub">Livraison synchronisée avec le coup d'envoi — fini les pizzas froides au mi-temps.</div>
-        <div class="home-match-pill">
-          🏟 France · Maroc &nbsp;·&nbsp;
-          <span class="countdown-badge green" style="padding:3px 8px;font-size:11px;">
-            <span class="badge-dot"></span> 1h32 avant le coup d'envoi
-          </span>
-        </div>
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow">⚽ Coupe du Monde 2026 · Livraison avant le coup d'envoi</div>
+      <h1 class="hero-title">
+        Régale tes<br>
+        <span class="accent">coéquipiers</span><br>
+        ce soir.
+      </h1>
+      <p class="hero-sub">Plateaux à partager livrés avant le coup d'envoi, garantis chauds. Plus jamais de pizzas froides au mi-temps.</p>
+      <div class="hero-actions">
+        <button class="btn btn-green btn-lg" onclick="showPage('page-2')">Voir les menus ⚽</button>
+        <a href="#how" class="btn btn-outline btn-lg">Comment ça marche</a>
       </div>
-
-      <div class="scroll-content">
-        <div class="home-section">
-          <a href="#screen-2" class="search-bar">
-            <span class="search-icon">🔍</span>
-            <span class="search-placeholder">Plateau, burger, sushi…</span>
-          </a>
-
-          <div class="categories">
-            <a href="#screen-2" class="cat-chip active">🍽 Plateaux</a>
-            <a href="#screen-2" class="cat-chip">🍕 Pizzas</a>
-            <a href="#screen-2" class="cat-chip">🌯 Tacos</a>
-            <a href="#screen-2" class="cat-chip">🍔 Burgers</a>
-            <a href="#screen-2" class="cat-chip">🥗 Healthy</a>
-          </div>
-
-          <div class="home-section-title">⚡ Spécial avant-match</div>
-
-          <a href="#screen-3" class="highlight-card">
-            <div class="highlight-img">🍕</div>
-            <div class="highlight-body">
-              <span class="highlight-tag">⭐ Recommandé</span>
-              <div class="highlight-name">Plateau Pizza × 4</div>
-              <div class="highlight-meta">
-                <span>🕐 28 min</span>
-                <span class="highlight-price">38 €</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="#screen-3" class="highlight-card">
-            <div class="highlight-img">🥙</div>
-            <div class="highlight-body">
-              <span class="highlight-tag">🚀 Livraison rapide</span>
-              <div class="highlight-name">Plateau Tacos × 4</div>
-              <div class="highlight-meta">
-                <span>🕐 22 min</span>
-                <span class="highlight-price">34 €</span>
-              </div>
-            </div>
-          </a>
+      <div class="hero-stats">
+        <div>
+          <span class="hero-stat-val">28 min</span>
+          <span class="hero-stat-label">Livraison moyenne</span>
         </div>
-      </div>
-
-      <div class="home-cta-wrap">
-        <a href="#screen-2" class="btn-primary">Voir tous les plateaux →</a>
+        <div>
+          <span class="hero-stat-val">4.8 ★</span>
+          <span class="hero-stat-label">Note moyenne</span>
+        </div>
+        <div>
+          <span class="hero-stat-val">50+</span>
+          <span class="hero-stat-label">Restaurants partenaires</span>
+        </div>
       </div>
     </div>
 
-    <!-- ================================================
-         SCREEN 2 — RÉSULTATS RECHERCHE
-         ================================================ -->
-    <div class="screen" id="screen-2">
-      <div class="topbar">
-        <a href="#screen-1" class="topbar-back">←</a>
-        <span class="topbar-title">Plateaux à partager</span>
-        <span class="countdown-badge green">
-          <span class="badge-dot"></span> 1h28
-        </span>
-      </div>
-
-      <div class="filter-bar">
-        <a href="#screen-2" class="filter-chip active">Tous</a>
-        <a href="#screen-2" class="filter-chip">4 pers.</a>
-        <a href="#screen-2" class="filter-chip">6 pers.</a>
-        <a href="#screen-2" class="filter-chip">Végé</a>
-        <a href="#screen-2" class="filter-chip">-30 min</a>
-      </div>
-
-      <div class="scroll-content">
-        <div class="results-label">12 résultats · livraison en moins de 35 min</div>
-
-        <a href="#screen-3" class="menu-card">
-          <div class="menu-card-emoji" style="background:#fef9c3;">🍕</div>
-          <div class="menu-card-body">
-            <div>
-              <div class="recommended-badge">⭐ Top ventes</div>
-              <div class="menu-card-name">Plateau Pizza × 4</div>
-              <div class="menu-card-sub">4 pizzas au choix, sauces, limonades</div>
-            </div>
-            <div class="menu-card-footer">
-              <span class="menu-card-price">38 €</span>
-              <span class="menu-card-time">⏱ 28 min</span>
-            </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-card-match">
+          <div class="hero-card-flag-group">
+            <span class="hero-card-flag">🇫🇷</span>
+            <span class="hero-card-vs">VS</span>
+            <span class="hero-card-flag">🇲🇦</span>
           </div>
-        </a>
-
-        <a href="#screen-3" class="menu-card">
-          <div class="menu-card-emoji" style="background:#fef3c7;">🥙</div>
-          <div class="menu-card-body">
-            <div>
-              <div class="menu-card-name">Plateau Tacos × 4</div>
-              <div class="menu-card-sub">4 tacos XL, frites, boissons incluses</div>
-            </div>
-            <div class="menu-card-footer">
-              <span class="menu-card-price">34 €</span>
-              <span class="menu-card-time">⏱ 22 min</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#screen-3" class="menu-card">
-          <div class="menu-card-emoji" style="background:#dcfce7;">🥗</div>
-          <div class="menu-card-body">
-            <div>
-              <div class="menu-card-name">Plateau Healthy × 4</div>
-              <div class="menu-card-sub">4 bowls, smoothies fruits frais</div>
-            </div>
-            <div class="menu-card-footer">
-              <span class="menu-card-price">42 €</span>
-              <span class="menu-card-time">⏱ 30 min</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#screen-3" class="menu-card">
-          <div class="menu-card-emoji" style="background:#fce7f3;">🍣</div>
-          <div class="menu-card-body">
-            <div>
-              <div class="menu-card-name">Plateau Sushi × 4</div>
-              <div class="menu-card-sub">48 pièces, soupe miso, wasabi</div>
-            </div>
-            <div class="menu-card-footer">
-              <span class="menu-card-price">56 €</span>
-              <span class="menu-card-time">⏱ 35 min</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#screen-3" class="menu-card">
-          <div class="menu-card-emoji" style="background:#fef0ef;">🍔</div>
-          <div class="menu-card-body">
-            <div>
-              <div class="menu-card-name">Plateau Burgers × 4</div>
-              <div class="menu-card-sub">4 burgers, frites, onion rings</div>
-            </div>
-            <div class="menu-card-footer">
-              <span class="menu-card-price">48 €</span>
-              <span class="menu-card-time">⏱ 32 min</span>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ================================================
-         SCREEN 3 — FICHE MENU
-         ================================================ -->
-    <div class="screen" id="screen-3">
-      <div class="topbar">
-        <a href="#screen-2" class="topbar-back">←</a>
-        <span class="topbar-title">Détail du menu</span>
-        <span class="countdown-badge green">
-          <span class="badge-dot"></span> 1h24
-        </span>
-      </div>
-
-      <div class="scroll-content">
-        <div class="menu-hero-emoji">
-          🍕
-          <div class="menu-hero-tag">🍕 Plateau Pizza × 4</div>
+          <span class="hero-card-score">21:00 · Ce soir</span>
         </div>
 
-        <div class="fiche-body">
-          <div class="fiche-name">Plateau Pizza × 4</div>
-          <div class="fiche-resto">📍 Pizza Napoli · 1,2 km · ⭐ 4,8 (312 avis)</div>
-
-          <div class="fiche-stats">
-            <div class="stat-pill">
-              <span class="stat-pill-val">28 min</span>
-              <span class="stat-pill-label">Livraison</span>
-            </div>
-            <div class="stat-pill">
-              <span class="stat-pill-val">4 pers.</span>
-              <span class="stat-pill-label">Pour</span>
-            </div>
-            <div class="stat-pill">
-              <span class="stat-pill-val">38 €</span>
-              <span class="stat-pill-label">Total</span>
-            </div>
-          </div>
-
-          <div class="fiche-divider"></div>
-
-          <div class="fiche-section-title">Ce qui est inclus</div>
-
-          <div class="fiche-item">
-            <div class="fiche-item-dot"></div>
-            <span class="fiche-item-text">4 pizzas au choix parmi 8 recettes</span>
-            <span class="fiche-item-qty">×4</span>
-          </div>
-          <div class="fiche-item">
-            <div class="fiche-item-dot"></div>
-            <span class="fiche-item-text">Sauces (ketchup, pesto, crème ail)</span>
-            <span class="fiche-item-qty">×3</span>
-          </div>
-          <div class="fiche-item">
-            <div class="fiche-item-dot"></div>
-            <span class="fiche-item-text">Limonades artisanales 50 cl</span>
-            <span class="fiche-item-qty">×4</span>
-          </div>
-          <div class="fiche-item">
-            <div class="fiche-item-dot"></div>
-            <span class="fiche-item-text">Boîtes de partage + serviettes</span>
-            <span class="fiche-item-qty">incl.</span>
-          </div>
-
-          <div class="fiche-divider"></div>
-
-          <div class="fiche-price-row">
-            <div>
-              <div class="fiche-price-big">38 €</div>
-              <div class="fiche-price-sub">9,50 € / pers. · livraison offerte</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="fiche-cta-wrap">
-        <a href="#screen-4" class="btn-primary">Ajouter au panier — 38 €</a>
-      </div>
-    </div>
-
-    <!-- ================================================
-         SCREEN 4 — PANIER (badge vert)
-         ================================================ -->
-    <div class="screen" id="screen-4">
-      <div class="topbar">
-        <a href="#screen-3" class="topbar-back">←</a>
-        <span class="topbar-title">Mon panier</span>
-      </div>
-
-      <div class="scroll-content">
-        <div class="cart-badge-section">
-          <div class="cart-badge-label">Temps avant le coup d'envoi</div>
-          <div class="countdown-badge-large green">
-            <span class="cbd-icon">⚽</span>
-            <div class="cbd-text">
-              <div class="cbd-title">Livraison à temps ✓</div>
-              <div class="cbd-sub">Vous recevrez votre commande avant le match</div>
-            </div>
-            <div class="cbd-time">1h18</div>
-          </div>
-        </div>
-
-        <div class="cart-items-section">
-          <div class="fiche-section-title" style="margin-bottom:4px;">Votre commande</div>
-          <div class="cart-item">
-            <div class="cart-item-emoji" style="background:#fef9c3;">🍕</div>
-            <div class="cart-item-info">
-              <div class="cart-item-name">Plateau Pizza × 4</div>
-              <div class="cart-item-sub">Pizza Napoli · livraison 28 min</div>
-            </div>
-            <div class="qty-control">
-              <button class="qty-btn">−</button>
-              <span class="qty-val">1</span>
-              <button class="qty-btn">+</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="cart-total-section">
-          <div class="cart-total-row">
-            <span>Sous-total</span>
-            <span>38,00 €</span>
-          </div>
-          <div class="cart-total-row">
-            <span>Livraison</span>
-            <span style="color:#16a34a;font-weight:600;">Offerte</span>
-          </div>
-          <div class="cart-total-row total">
-            <span>Total</span>
-            <span>38,00 €</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="cart-cta-wrap">
-        <a href="#screen-6" class="btn-primary">Commander — 38 €</a>
-      </div>
-    </div>
-
-    <!-- ================================================
-         SCREEN 5 — PANIER (badge orange — risque retard)
-         ================================================ -->
-    <div class="screen" id="screen-5">
-      <div class="topbar">
-        <a href="#screen-3" class="topbar-back">←</a>
-        <span class="topbar-title">Mon panier</span>
-      </div>
-
-      <div class="scroll-content">
-        <div class="cart-badge-section">
-          <div class="cart-badge-label">Temps avant le coup d'envoi</div>
-          <div class="countdown-badge-large orange">
-            <span class="cbd-icon">⚠️</span>
-            <div class="cbd-text">
-              <div class="cbd-title">Risque de retard</div>
-              <div class="cbd-sub">La livraison pourrait arriver après le coup d'envoi</div>
-            </div>
-            <div class="cbd-time">0h32</div>
-          </div>
-        </div>
-
-        <div class="warning-banner">
-          <span class="warning-banner-icon">🕐</span>
+        <div class="hero-countdown-wrap">
           <div>
-            <div class="warning-banner-title">Votre commande risque d'arriver après 21h00</div>
-            <div class="warning-banner-sub">Délai estimé : 38 min · Coup d'envoi dans 32 min. Vous pouvez retirer des articles pour accélérer la préparation, ou commander quand même.</div>
+            <div class="hero-countdown-label">Temps avant le coup d'envoi</div>
+            <div class="hero-countdown-time" id="hero-cd">1:28:00</div>
+          </div>
+          <div class="hero-countdown-icon">⏱</div>
+        </div>
+
+        <div class="hero-menu-item">
+          <div class="hero-menu-emoji">🍕</div>
+          <div class="hero-menu-name">Plateau Pizza × 4</div>
+          <div>
+            <div class="hero-menu-meta">Livraison 28 min</div>
+            <div class="hero-menu-price">38 €</div>
           </div>
         </div>
 
-        <div class="cart-items-section">
-          <div class="fiche-section-title" style="margin-bottom:4px;">Votre commande</div>
-          <div class="cart-item">
-            <div class="cart-item-emoji" style="background:#fef9c3;">🍕</div>
-            <div class="cart-item-info">
-              <div class="cart-item-name">Plateau Pizza × 4</div>
-              <div class="cart-item-sub">Pizza Napoli · livraison 38 min</div>
-            </div>
-            <div class="qty-control">
-              <button class="qty-btn">−</button>
-              <span class="qty-val">1</span>
-              <button class="qty-btn">+</button>
-            </div>
+        <div class="hero-menu-item">
+          <div class="hero-menu-emoji">🥙</div>
+          <div class="hero-menu-name">Plateau Tacos × 4</div>
+          <div>
+            <div class="hero-menu-meta">Livraison 22 min</div>
+            <div class="hero-menu-price">34 €</div>
           </div>
         </div>
 
-        <div class="cart-total-section">
-          <div class="cart-total-row">
-            <span>Sous-total</span>
-            <span>38,00 €</span>
-          </div>
-          <div class="cart-total-row">
-            <span>Livraison</span>
-            <span style="color:#16a34a;font-weight:600;">Offerte</span>
-          </div>
-          <div class="cart-total-row total">
-            <span>Total</span>
-            <span>38,00 €</span>
-          </div>
+        <div class="hero-badge-delivery">
+          ✅ Livraison garantie avant 21:00 · France - Maroc
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="cart-actions">
-        <a href="#screen-6" class="btn-primary">Commander quand même — 38 €</a>
-        <a href="#screen-2" class="btn-secondary">Modifier ma commande</a>
+  <section class="how-section" id="how">
+    <div class="section-eyebrow">Comment ça marche</div>
+    <div class="section-title">Commander en 4 étapes</div>
+    <p class="section-sub">GoalDelivery synchronise votre commande avec l'heure du coup d'envoi. Pas de stress, pas de calcul mental.</p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Choisissez votre match</div>
+        <div class="step-desc">Sélectionnez le match du soir — GoalDelivery calcule automatiquement le temps restant avant le coup d'envoi.</div>
+        <span class="step-connector">→</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">Composez votre plateau</div>
+        <div class="step-desc">Parcourez les menus "plateau à partager" validés par des restaurants partenaires proches de chez vous.</div>
+        <span class="step-connector">→</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">Vérifiez le badge livraison</div>
+        <div class="step-desc">Un badge vert confirme que votre commande arrivera avant le coup d'envoi. Orange ? Ajustez votre panier.</div>
+        <span class="step-connector">→</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">Profitez du match</div>
+        <div class="step-desc">Votre livraison arrive avant le coup d'envoi. Installez-vous, c'est l'heure.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <div class="section-eyebrow">Menus populaires ce soir</div>
+    <div class="section-title">Plateaux prêts pour le match</div>
+    <p class="section-sub">Sélectionnés pour leur délai de livraison et leur format "à partager". Tous compatibles avant le coup d'envoi de 21h00.</p>
+
+    <div class="menu-grid">
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#fef9c3;">
+          🍕
+          <span class="menu-card-badge">⭐ Top ventes</span>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Pizza × 4</div>
+          <div class="menu-card-desc">4 pizzas au choix, sauces maison, limonades artisanales incluses</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">38 € <span>/ 4 pers.</span></div>
+            <div class="menu-card-time">⏱ 28 min</div>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#fef3c7;">
+          🥙
+          <span class="menu-card-badge">🚀 Express</span>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Tacos × 4</div>
+          <div class="menu-card-desc">4 tacos XL au choix, frites maison, boissons 50cl incluses</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">34 € <span>/ 4 pers.</span></div>
+            <div class="menu-card-time">⏱ 22 min</div>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#fce7f3;">
+          🍣
+          <span class="menu-card-tag">Premium</span>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Sushi × 4</div>
+          <div class="menu-card-desc">48 pièces assortis, soupe miso, edamame, sauce teriyaki</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">56 € <span>/ 4 pers.</span></div>
+            <div class="menu-card-time">⏱ 35 min</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-outline" onclick="showPage('page-2')">Voir tous les menus →</button>
+    </div>
+  </section>
+
+  <section class="proof-section">
+    <div>
+      <div class="section-eyebrow">Ce qu'ils en pensent</div>
+      <div class="proof-title">Des supporters satisfaits à chaque mi-temps</div>
+      <p class="proof-sub">GoalDelivery a livré plus de 40 000 commandes pendant les phases de groupes. Jamais en retard sur un coup d'envoi.</p>
+      <div class="proof-stat-row">
+        <div class="proof-stat">
+          <span class="proof-stat-val">97%</span>
+          <span class="proof-stat-label">de livraisons avant le coup d'envoi</span>
+        </div>
+        <div class="proof-stat">
+          <span class="proof-stat-val">4.8★</span>
+          <span class="proof-stat-label">note moyenne sur 8 400 avis</span>
+        </div>
+        <div class="proof-stat">
+          <span class="proof-stat-val">28 min</span>
+          <span class="proof-stat-label">temps de livraison moyen</span>
+        </div>
+        <div class="proof-stat">
+          <span class="proof-stat-val">50+</span>
+          <span class="proof-stat-label">restaurants partenaires</span>
+        </div>
+      </div>
+    </div>
+    <div class="reviews-list">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Commandé 1h avant France - Portugal. Livré à 20h42, le match à 21h. Badge vert tenu sa promesse. Plus jamais de pizzas surgelées !"</div>
+        <div class="review-author">Thomas R. · Lyon · ⚽ France vs Portugal</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Le badge orange m'a sauvé. J'avais trop de plats, j'en ai retiré un et hop, badge vert. La commande est arrivée 8 minutes avant le coup d'envoi."</div>
+        <div class="review-author">Camille D. · Paris · ⚽ Maroc vs Espagne</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★☆</div>
+        <div class="review-text">"Plateau Tacos pour 6, livrés en 25 min. Le seul truc que j'ai pas compris : à quoi correspondait exactement le badge, mais la livraison était top."</div>
+        <div class="review-author">Kévin M. · Marseille · ⚽ Brésil vs France</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-title">Le match commence dans <span id="cta-cd">1:28:00</span></div>
+    <p class="cta-sub">Ne vous posez plus la question. Commandez maintenant, on gère le reste.</p>
+    <button class="btn btn-white btn-lg" onclick="showPage('page-2')">Commander mon plateau →</button>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <div class="nav-logo-icon">⚽</div>
+          <span style="color:#fff;">Goal<span style="color:#4ade80;">Delivery</span></span>
+        </div>
+        <p>Livraison synchronisée avec la Coupe du Monde. Plateaux à partager, livrés avant le coup d'envoi.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Menus</div>
+        <ul class="footer-links">
+          <li><a href="#">Plateaux à partager</a></li>
+          <li><a href="#">Pizzas</a></li>
+          <li><a href="#">Tacos</a></li>
+          <li><a href="#">Sushis</a></li>
+          <li><a href="#">Burgers</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">GoalDelivery</div>
+        <ul class="footer-links">
+          <li><a href="#">Comment ça marche</a></li>
+          <li><a href="#">Restaurants partenaires</a></li>
+          <li><a href="#">Zones de livraison</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Aide</div>
+        <ul class="footer-links">
+          <li><a href="#">Suivi de commande</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">CGU</a></li>
+          <li><a href="#">Confidentialité</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 GoalDelivery · Prototype pédagogique EEMI M1 UX/UI</span>
+      <span>Tous les matchs, tous les plateaux ⚽</span>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ============================================================
+     PAGE 2 — CATALOGUE MENUS
+     ============================================================ -->
+<div class="page" id="page-2">
+
+  <nav>
+    <a href="#" onclick="showPage('page-1')" class="nav-logo">
+      <div class="nav-logo-icon">⚽</div>
+      Goal<span>Delivery</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('page-2')" style="color:#16a34a;font-weight:700;">Menus</a></li>
+      <li><a href="#">Restaurants</a></li>
+      <li><a href="#">Comment ça marche</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav btn-nav-ghost">Se connecter</button>
+      <button class="btn-nav btn-nav-primary" onclick="showPage('page-4')">Panier (1)</button>
+    </div>
+  </nav>
+
+  <div class="match-ticker">
+    <div class="ticker-match">
+      <span class="ticker-flag">🇫🇷</span>
+      <span>France · Maroc</span>
+      <span class="ticker-flag">🇲🇦</span>
+    </div>
+    <div class="ticker-divider"></div>
+    <div class="ticker-countdown green">
+      ⚽ <span id="cat-cd">1:28:00</span> avant le coup d'envoi
+    </div>
+  </div>
+
+  <div class="catalog-hero">
+    <h1>Plateaux à partager</h1>
+    <p>12 menus disponibles — tous livrables avant 21h00 · France vs Maroc</p>
+  </div>
+
+  <div class="catalog-filters">
+    <span class="filter-chip active">Tous les plateaux</span>
+    <span class="filter-chip">4 personnes</span>
+    <span class="filter-chip">6 personnes</span>
+    <span class="filter-chip">Végétarien</span>
+    <span class="filter-chip">Moins de 30 min</span>
+    <span class="filter-chip">Moins de 40 €</span>
+  </div>
+
+  <div class="catalog-body">
+    <div class="catalog-sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">⚽ Match du soir</div>
+        <div class="sidebar-match">
+          <span class="sidebar-flags">🇫🇷 🇲🇦</span>
+          <div class="sidebar-match-info">
+            <div class="sidebar-match-name">France · Maroc</div>
+            <div class="sidebar-match-time">Ce soir · 21:00</div>
+          </div>
+        </div>
+        <div class="sidebar-countdown">
+          <span class="sidebar-countdown-val" id="side-cd">1:28:00</span>
+          <span class="sidebar-countdown-label">avant le coup d'envoi</span>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Zone de livraison</div>
+        <div style="font-size:13px;color:#737373;line-height:1.5;">📍 Paris 11e · Livraison disponible</div>
       </div>
     </div>
 
-    <!-- ================================================
-         SCREEN 6 — CONFIRMATION
-         ================================================ -->
-    <div class="screen" id="screen-6">
-      <div class="topbar">
-        <span class="topbar-title">Confirmation</span>
+    <div class="catalog-results">
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#fef9c3;">🍕<span class="menu-card-badge">⭐ Top</span></div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Pizza × 4</div>
+          <div class="menu-card-desc">4 pizzas, sauces maison, limonades</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">38 €</div>
+            <div class="menu-card-time">⏱ 28 min</div>
+          </div>
+        </div>
+      </a>
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#fef3c7;">🥙<span class="menu-card-badge">🚀 Express</span></div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Tacos × 4</div>
+          <div class="menu-card-desc">4 tacos XL, frites, boissons incluses</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">34 €</div>
+            <div class="menu-card-time">⏱ 22 min</div>
+          </div>
+        </div>
+      </a>
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#dcfce7;">🥗</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Healthy × 4</div>
+          <div class="menu-card-desc">4 bowls, smoothies fruits frais</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">42 €</div>
+            <div class="menu-card-time">⏱ 30 min</div>
+          </div>
+        </div>
+      </a>
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#fce7f3;">🍣</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Sushi × 4</div>
+          <div class="menu-card-desc">48 pièces, soupe miso, wasabi</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">56 €</div>
+            <div class="menu-card-time">⏱ 35 min</div>
+          </div>
+        </div>
+      </a>
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#fef0ef;">🍔</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Burgers × 4</div>
+          <div class="menu-card-desc">4 burgers, frites, onion rings</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">48 €</div>
+            <div class="menu-card-time">⏱ 32 min</div>
+          </div>
+        </div>
+      </a>
+      <a href="#" onclick="showPage('page-3')" class="menu-card">
+        <div class="menu-card-img" style="background:#f0f9ff;">🌮</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Plateau Nachos × 4</div>
+          <div class="menu-card-desc">Nachos, guacamole, salsa, cheese dip</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">29 €</div>
+            <div class="menu-card-time">⏱ 18 min</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     PAGE 3 — FICHE PRODUIT
+     ============================================================ -->
+<div class="page" id="page-3">
+
+  <nav>
+    <a href="#" onclick="showPage('page-1')" class="nav-logo">
+      <div class="nav-logo-icon">⚽</div>
+      Goal<span>Delivery</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('page-2')">Menus</a></li>
+      <li><a href="#">Restaurants</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav btn-nav-ghost">Se connecter</button>
+      <button class="btn-nav btn-nav-primary" onclick="showPage('page-4')">Panier (1)</button>
+    </div>
+  </nav>
+
+  <div class="match-ticker">
+    <div class="ticker-match">🇫🇷 France · Maroc 🇲🇦</div>
+    <div class="ticker-divider"></div>
+    <div class="ticker-countdown green">⚽ <span id="fiche-cd">1:24:00</span> avant le coup d'envoi</div>
+  </div>
+
+  <div class="fiche-layout">
+    <div class="fiche-left">
+      <div class="fiche-breadcrumb">
+        <a href="#" onclick="showPage('page-2')">← Tous les menus</a> / <span>Plateau Pizza × 4</span>
       </div>
 
-      <div class="confirmation-wrap">
-        <div class="confirmation-icon">✅</div>
-        <div class="confirmation-title">Commande envoyée !</div>
-        <div class="confirmation-sub">Pizza Napoli prépare votre plateau.<br>Vous allez recevoir un SMS de suivi.</div>
+      <div class="fiche-emoji-hero">🍕</div>
 
-        <div class="confirmation-eta">
-          <span class="confirmation-eta-val">28 min</span>
-          <span class="confirmation-eta-label">Estimation de livraison</span>
+      <div class="fiche-title">Plateau Pizza × 4</div>
+      <div class="fiche-subtitle">📍 Pizza Napoli · 1,2 km · ⭐ 4,8 (312 avis) · Livraison offerte</div>
+
+      <div class="fiche-meta-row">
+        <div class="fiche-meta-pill">🧑‍🤝‍🧑 Pour 4 personnes</div>
+        <div class="fiche-meta-pill">⏱ Livraison 28 min</div>
+        <div class="fiche-meta-pill">🌡 Servi chaud</div>
+        <div class="fiche-meta-pill">📦 Boîtes incluses</div>
+      </div>
+
+      <div class="fiche-section-title">Ce qui est inclus</div>
+      <div class="fiche-items">
+        <div class="fiche-item"><div class="fiche-item-dot"></div><span class="fiche-item-name">4 pizzas au choix parmi 8 recettes</span><span class="fiche-item-qty">×4</span></div>
+        <div class="fiche-item"><div class="fiche-item-dot"></div><span class="fiche-item-name">Sauces maison (ketchup, pesto, crème ail)</span><span class="fiche-item-qty">×3</span></div>
+        <div class="fiche-item"><div class="fiche-item-dot"></div><span class="fiche-item-name">Limonades artisanales 50 cl</span><span class="fiche-item-qty">×4</span></div>
+        <div class="fiche-item"><div class="fiche-item-dot"></div><span class="fiche-item-name">Boîtes de partage, serviettes, ustensiles</span><span class="fiche-item-qty">incl.</span></div>
+      </div>
+
+      <div class="fiche-section-title">Avis clients</div>
+      <div class="fiche-reviews">
+        <div class="review-row">
+          <div class="review-avatar">😊</div>
+          <div><div class="review-stars">★★★★★</div><div class="review-text">"Livré 20 min avant le coup d'envoi. Pizzas chaudes, portions généreuses."</div><div class="review-author">Thomas · il y a 3 jours</div></div>
         </div>
-
-        <div class="confirmation-detail" style="width:100%;">
-          <div class="confirmation-detail-row">
-            <span>Commande</span>
-            <span>Plateau Pizza × 4</span>
-          </div>
-          <div class="confirmation-detail-row">
-            <span>Montant</span>
-            <span>38,00 €</span>
-          </div>
-          <div class="confirmation-detail-row">
-            <span>Paiement</span>
-            <span>Visa ···· 4242</span>
-          </div>
-          <div class="confirmation-detail-row">
-            <span>N° commande</span>
-            <span>#GD-20814</span>
-          </div>
+        <div class="review-row">
+          <div class="review-avatar">🧑</div>
+          <div><div class="review-stars">★★★★☆</div><div class="review-text">"Très bon mais j'ai failli me tromper de quantité dans le panier."</div><div class="review-author">Camille · il y a 5 jours</div></div>
         </div>
-
-        <a href="#screen-1" class="btn-secondary" style="width:100%;">Retour à l'accueil</a>
       </div>
     </div>
 
-  </div><!-- .screens -->
-</div><!-- .device -->
+    <div class="fiche-right">
+      <div class="order-panel">
+        <div class="order-price">38 €</div>
+        <div class="order-price-sub">9,50 € / personne · livraison offerte</div>
 
+        <div class="order-countdown">
+          <div class="order-countdown-top">⚽ Compte à rebours avant le match</div>
+          <div class="order-countdown-val" id="order-cd">1:24:00</div>
+          <div class="order-countdown-sub">Livraison estimée : 28 min — vous recevrez avant 21h00 ✓</div>
+        </div>
+
+        <div class="qty-row">
+          <span class="qty-label">Quantité</span>
+          <div class="qty-ctrl">
+            <button class="qty-btn">−</button>
+            <span class="qty-val">1</span>
+            <button class="qty-btn">+</button>
+          </div>
+        </div>
+
+        <div class="order-divider"></div>
+
+        <div class="order-row"><span>Sous-total</span><span>38,00 €</span></div>
+        <div class="order-row"><span>Livraison</span><span class="green">Offerte</span></div>
+        <div class="order-row total"><span>Total</span><span>38,00 €</span></div>
+
+        <div class="order-divider"></div>
+
+        <button class="btn btn-green btn-block" onclick="showPage('page-4')">
+          Ajouter au panier — 38 €
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     PAGE 4 — PANIER (badge vert — livraison à temps)
+     ============================================================ -->
+<div class="page" id="page-4">
+
+  <nav>
+    <a href="#" onclick="showPage('page-1')" class="nav-logo">
+      <div class="nav-logo-icon">⚽</div>
+      Goal<span>Delivery</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('page-2')">← Continuer mes achats</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav btn-nav-ghost">Se connecter</button>
+    </div>
+  </nav>
+
+  <div class="match-ticker">
+    <div class="ticker-match">🇫🇷 France · Maroc 🇲🇦</div>
+    <div class="ticker-divider"></div>
+    <div class="ticker-countdown green">⚽ <span id="cart-cd">1:18:00</span> avant le coup d'envoi</div>
+  </div>
+
+  <div class="cart-layout">
+    <div class="cart-left">
+      <div class="cart-page-title">Mon panier</div>
+      <div class="cart-page-sub">1 article · livraison estimée à 20h42</div>
+
+      <div class="cart-alert ok">
+        <span class="cart-alert-icon">✅</span>
+        <div>
+          <div class="cart-alert-title">Livraison à temps pour le match</div>
+          <div class="cart-alert-sub">Délai de livraison : 28 min · Coup d'envoi dans 1h18 · Vous recevrez votre commande avant 21h00.</div>
+        </div>
+        <div class="cart-alert-time" id="cart-cd-big">1:18</div>
+      </div>
+
+      <div class="cart-items">
+        <div class="cart-item">
+          <div class="cart-item-emoji">🍕</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">Plateau Pizza × 4</div>
+            <div class="cart-item-sub">Pizza Napoli · Livraison 28 min</div>
+          </div>
+          <div class="qty-ctrl" style="margin-right:16px;">
+            <button class="qty-btn">−</button>
+            <span class="qty-val">1</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="cart-item-price">38 €</div>
+        </div>
+      </div>
+
+      <div style="color:#737373;font-size:14px;margin-top:16px;">
+        <a href="#" onclick="showPage('page-2')" style="color:#16a34a;font-weight:600;">+ Ajouter un autre plateau</a>
+      </div>
+    </div>
+
+    <div class="cart-right">
+      <div class="summary-panel">
+        <div class="summary-title">Résumé de la commande</div>
+        <div class="summary-row"><span>Plateau Pizza × 4</span><span>38,00 €</span></div>
+        <div class="summary-row"><span>Livraison</span><span class="green">Offerte</span></div>
+        <div class="summary-row"><span>Frais de service</span><span>0,00 €</span></div>
+        <div class="summary-row total"><span>Total</span><span>38,00 €</span></div>
+
+        <div class="promo-row">
+          <input class="promo-input" type="text" placeholder="Code promo">
+          <button class="promo-btn">Appliquer</button>
+        </div>
+
+        <button class="btn btn-green btn-block" onclick="showPage('page-5')">
+          Commander — 38 €
+        </button>
+
+        <div style="text-align:center;font-size:12px;color:#a3a3a3;margin-top:12px;">
+          🔒 Paiement sécurisé · Visa · Mastercard · PayPal
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     PAGE 5 — CONFIRMATION
+     ============================================================ -->
+<div class="page" id="page-5">
+
+  <nav>
+    <a href="#" onclick="showPage('page-1')" class="nav-logo">
+      <div class="nav-logo-icon">⚽</div>
+      Goal<span>Delivery</span>
+    </a>
+  </nav>
+
+  <div class="match-ticker">
+    <div class="ticker-match">🇫🇷 France · Maroc 🇲🇦</div>
+    <div class="ticker-divider"></div>
+    <div class="ticker-countdown green">⚽ Commande confirmée ✓</div>
+  </div>
+
+  <div class="confirm-wrap">
+    <div class="confirm-card">
+      <div class="confirm-icon">✅</div>
+      <div class="confirm-title">Commande confirmée !</div>
+      <div class="confirm-sub">Pizza Napoli a bien reçu votre commande et commence la préparation. Vous allez recevoir un SMS de confirmation.</div>
+
+      <div class="confirm-eta">
+        <span class="confirm-eta-val">28 min</span>
+        <span class="confirm-eta-label">Livraison estimée · Arrivée prévue avant 21h00 ✓</span>
+      </div>
+
+      <div class="confirm-details">
+        <div class="confirm-detail-row"><span>Commande</span><strong>Plateau Pizza × 4</strong></div>
+        <div class="confirm-detail-row"><span>Restaurant</span><strong>Pizza Napoli</strong></div>
+        <div class="confirm-detail-row"><span>Montant</span><strong>38,00 €</strong></div>
+        <div class="confirm-detail-row"><span>Paiement</span><strong>Visa ···· 4242</strong></div>
+        <div class="confirm-detail-row"><span>N° commande</span><strong>#GD-20814</strong></div>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="btn btn-outline" onclick="showPage('page-1')">Retour à l'accueil</button>
+        <button class="btn btn-green">Suivre ma livraison →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
 <script>
-// Ensure screen-1 shows by default and handle hash navigation
-function showScreen() {
-  const hash = window.location.hash || '#screen-1';
-  document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-  const target = document.querySelector(hash);
-  if (target) target.style.display = 'flex';
-  else document.querySelector('#screen-1').style.display = 'flex';
+// ---- Page navigation ----
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); window.scrollTo(0,0); }
 }
 
-window.addEventListener('hashchange', showScreen);
-window.addEventListener('load', showScreen);
+// ---- Live countdown (starts from 1h28 and counts down) ----
+let totalSeconds = 88 * 60; // 1h28m00s
+
+function formatTime(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function updateCountdowns() {
+  const t = formatTime(totalSeconds);
+  const tShort = (() => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    return h > 0 ? `${h}h${String(m).padStart(2,'0')}` : `${m} min`;
+  })();
+
+  const ids = ['ticker-time','hero-cd','cat-cd','side-cd','fiche-cd','order-cd','cart-cd','cta-cd'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t;
+  });
+  const bigEl = document.getElementById('cart-cd-big');
+  if (bigEl) bigEl.textContent = tShort;
+}
+
+setInterval(() => {
+  if (totalSeconds > 0) totalSeconds--;
+  updateCountdowns();
+}, 1000);
+
+updateCountdowns();
 </script>
 
 </body>
